@@ -8,6 +8,10 @@ import ru.javawebinar.basejava.model.Resume;
 import static org.hamcrest.CoreMatchers.*;
 
 public abstract class AbstractArrayStorageTest {
+    public AbstractArrayStorageTest(Storage storage) {
+        this.storage = storage;
+    }
+
     private Storage storage = new ArrayStorage();
     private Storage storageTest = new ArrayStorage();
 
@@ -45,6 +49,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() throws Exception {
+        Resume[]str=storage.getAll();
         Assert.assertEquals(new Resume(UUID_1),storage.get(UUID_1));
         Assert.assertEquals(new Resume(UUID_2),storage.get(UUID_2));
         Assert.assertEquals(new Resume(UUID_3),storage.get(UUID_3));
