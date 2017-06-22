@@ -1,5 +1,12 @@
 package ru.javawebinar.basejava.storage;
 
-public class ArrayStorageTest extends AbstractArrayStorageTest{
+import org.junit.Before;
+import org.junit.Test;
 
+public class ArrayStorageTest extends AbstractArrayStorageTest{
+    @Override
+    @Before
+    public void setUp() throws Exception {
+
+    }
 }

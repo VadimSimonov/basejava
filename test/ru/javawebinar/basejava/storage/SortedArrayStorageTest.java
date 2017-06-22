@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 /**
  * Created by simonov on 6/21/17.
  */
-public class SortedArrayStorageTest {
+public class SortedArrayStorageTest extends AbstractArrayStorageTest {
     @Test
     public void fillDeletedElement() throws Exception {
     }
