@@ -3,6 +3,7 @@ package ru.javawebinar.basejava;
 import ru.javawebinar.basejava.model.Resume;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class MainReflection {
 
@@ -17,9 +18,8 @@ public class MainReflection {
         // TODO : invoke r.toString via reflection
         // java-course.ru/begin/reflection
         Class f = r.getClass();
-        Resume sc = (Resume) f.newInstance();
-        java.lang.reflect.Method method= f.getMethod("toString");
-        String string = (String) method.invoke(sc);
+        Method method= f.getMethod("toString");
+        String string = (String) method.invoke(r);
         System.out.println(string);
 
         System.out.println(r);
