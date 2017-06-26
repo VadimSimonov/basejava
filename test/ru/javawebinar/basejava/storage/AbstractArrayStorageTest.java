@@ -78,6 +78,7 @@ public abstract class AbstractArrayStorageTest {
         try {
             storage.save(new Resume());
         } catch (StorageException e) {
+            Assert.assertEquals("Storage overflow", e.getMessage());
         } catch (Exception e) {
             Assert.fail();
         }
