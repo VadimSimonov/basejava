@@ -7,6 +7,7 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+
 import static org.hamcrest.CoreMatchers.*;
 
 public abstract class AbstractArrayStorageTest {
@@ -41,13 +42,13 @@ public abstract class AbstractArrayStorageTest {
     @Test
     public void clear() throws Exception {
         storage.clear();
-        Assert.assertEquals(0,storage.size());
+        Assert.assertEquals(0, storage.size());
     }
 
     @Test
     public void update() throws Exception {
         storage.update(UpdateUiid);
-        Assert.assertEquals(UpdateUiid,storage.get(UpdateUiid.getUuid()));
+        Assert.assertEquals(UpdateUiid, storage.get(UpdateUiid.getUuid()));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -57,28 +58,30 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() throws Exception {
-        Resume[]str=storage.getAll();
-        Assert.assertEquals(new Resume(UUID_1),str[0]);
-        Assert.assertEquals(new Resume(UUID_2),str[1]);
-        Assert.assertEquals(new Resume(UUID_3),str[2]);
+        Resume[] str = storage.getAll();
+        Assert.assertEquals(new Resume(UUID_1), str[0]);
+        Assert.assertEquals(new Resume(UUID_2), str[1]);
+        Assert.assertEquals(new Resume(UUID_3), str[2]);
     }
 
     @Test
     public void save() throws Exception {
         storage.save(SaveUiid);
-        Assert.assertEquals(SaveUiid,storage.get(SaveUiid.getUuid()));
+        Assert.assertEquals(SaveUiid, storage.get(SaveUiid.getUuid()));
     }
 
-    @Test(expected = StorageException.class)
+    @Test
     public void saveOverFlow() throws Exception {
-        try {
-            for (int i = 4; i <=AbstractArrayStorage.STORAGE_LIMIT ; i++) {
-                storage.save(new Resume());
+        for (int i = 4; i <= AbstractArrayStorage.STORAGE_LIMIT; i++) {
+            storage.save(new Resume());
         }
-        }catch (StorageException e) {
+        try {
+            storage.save(new Resume());
+        } catch (StorageException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
-        storage.save(new Resume());
+
     }
 
     @Test(expected = ExistStorageException.class)
@@ -89,7 +92,7 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = NotExistStorageException.class)
     public void delete() throws Exception {
         storage.delete(String.valueOf(UpdateUiid));
-        Assert.assertThat(UpdateUiid,equalTo(storage.get(UpdateUiid.getUuid())));
+        Assert.assertThat(UpdateUiid, equalTo(storage.get(UpdateUiid.getUuid())));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -99,7 +102,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void get() throws Exception {
-        Assert.assertThat(UpdateUiid,equalTo(storage.get(UpdateUiid.getUuid())));
+        Assert.assertThat(UpdateUiid, equalTo(storage.get(UpdateUiid.getUuid())));
     }
 
     @Test(expected = NotExistStorageException.class)
