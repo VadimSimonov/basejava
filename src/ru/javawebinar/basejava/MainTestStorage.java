@@ -26,6 +26,7 @@ public class MainTestStorage {
         printAll();
         LIST_STORAGE.delete(r1.getUuid());
         printAll();
+        System.out.println("Size: " + LIST_STORAGE.size());
         LIST_STORAGE.update(r2);
         printAll();
         LIST_STORAGE.clear();

@@ -14,7 +14,7 @@ public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
     protected void insertElement(Resume r, int index) {
-        storage[size] = r;
+        storage[index] = r;
     }
 
     @Override
@@ -25,5 +25,10 @@ public class ArrayStorage extends AbstractArrayStorage {
             }
         }
         return -1;
+    }
+
+    @Override
+    protected void updateMethod(int index, Resume r) {
+        storage[index] = r;
     }
 }

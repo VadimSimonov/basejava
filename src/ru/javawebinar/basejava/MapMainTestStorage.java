@@ -17,9 +17,9 @@ public class MapMainTestStorage {
         Resume r2 = new Resume("uuid2");
         Resume r3 = new Resume("uuid3");
 
-        MAP_STORAGE.save("1",r1);
-        MAP_STORAGE.save("2",r2);
-        MAP_STORAGE.save("3",r3);
+        MAP_STORAGE.save(r1);
+        MAP_STORAGE.save(r2);
+        MAP_STORAGE.save(r3);
 
         printAll();
         System.out.println("Get r1: " + MAP_STORAGE.get(r1.getUuid()));

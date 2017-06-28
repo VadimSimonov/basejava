@@ -1,10 +1,10 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -12,7 +12,6 @@ import java.util.Map;
  */
 public class MapStorage extends AbstractStorage {
     protected HashMap<String,Resume> map = new HashMap<>();
-    int size=0;
 
     @Override
     public void clear() {
@@ -21,25 +20,15 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public void update(Resume r) {
-        map.put(String.valueOf(getIndex(String.valueOf(r))),r);
-    }
-
-
-    public void save(String str,Resume r) {
-        map.put(str,r);
-        size++;
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        return map.get(String.valueOf(getIndex(uuid)));
-    }
-
-    @Override
-    public void delete(String uuid) {
-        map.remove(String.valueOf(getIndex(uuid)));
-        size--;
+    public void save(Resume r) {
+        int index = getIndex(r.getUuid());
+        if (index >= 0) {
+            throw new ExistStorageException(r.getUuid());
+        } else {
+            if (size>=0)
+            insertElement(r, size+1);
+            size++;
+        }
     }
 
     @Override
@@ -51,16 +40,31 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
     protected int getIndex(String uuid) {
         for (Map.Entry<String, Resume> entry : map.entrySet()) {
             if (entry.getValue().getUuid().equals(uuid))
                 return Integer.parseInt(entry.getKey());
         }
         return -1;
+    }
+
+    @Override
+    protected void updateMethod(int index, Resume r) {
+        map.put(String.valueOf(index),r);
+    }
+
+    @Override
+    protected void insertElement(Resume r, int index) {
+        map.put(String.valueOf(index),r);
+    }
+
+    @Override
+    protected Resume getMethod(int index) {
+        return map.get(index);
+    }
+
+    @Override
+    protected void deleteMethod(int index) {
+        map.remove(String.valueOf(index));
     }
 }

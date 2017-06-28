@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
  */
 public class ListStorage extends AbstractStorage {
     protected ArrayList<Resume> list = new ArrayList<>();
-    int size=0;
     @Override
     public void clear() {
        list.clear();
@@ -18,31 +17,18 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public void update(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(r.getUuid());
-        } else {
-            list.set(index,r);
-        }
-    }
-
-    @Override
     public void save(Resume r) {
-        list.add(r);
-        size++;
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        return list.stream().filter(i -> i.getUuid().equals(uuid)).findFirst().orElse(null);
-
-    }
-
-    @Override
-    public void delete(String uuid) {
-        list.remove(getIndex(uuid));
-        size--;
+        int index = getIndex(r.getUuid());
+        if (index >= 0) {
+            throw new ExistStorageException(r.getUuid());
+        }  else {
+            if (size==0) {
+                insertElement(r, size);
+                size++;
+            }else if (size>0){
+                insertElement(r, size);
+                size++;}
+        }
     }
 
     @Override
@@ -52,13 +38,30 @@ public class ListStorage extends AbstractStorage {
         return array;
     }
 
-    @Override
-    public int size() {
-        return size;
-    }
 
     @Override
     protected int getIndex(String uuid) {
         return list.indexOf(new Resume(uuid));
+    }
+
+    @Override
+    protected void updateMethod(int index, Resume r) {
+        list.set(index,r);
+    }
+
+    @Override
+    protected void insertElement(Resume r, int index) {
+        list.add(index,r);
+    }
+
+    @Override
+    protected Resume getMethod(int index) {
+        return list.get(index);
+    }
+
+    @Override
+    protected void deleteMethod(int index) {
+        list.remove(index);
+        list.trimToSize();
     }
 }

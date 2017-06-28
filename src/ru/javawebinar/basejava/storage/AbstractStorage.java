@@ -1,51 +1,52 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 /**
  * Created by simonov on 6/27/17.
  */
 public abstract class AbstractStorage implements Storage {
-
-    @Override
-    public void clear() {
-
-    }
-
+    protected static final int STORAGE_LIMIT = 10000;
+    protected int size = 0;
 
     @Override
     public void update(Resume r) {
-
-    }
-
-    @Override
-    public void save(Resume r) {
-
+        int index = getIndex(r.getUuid());
+        if (index < 0) {
+            throw new NotExistStorageException(r.getUuid());
+        } else {
+            updateMethod(index,r);
+        }
     }
 
     @Override
     public Resume get(String uuid) {
-        return null;
+        int index = getIndex(uuid);
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        return getMethod(index);
     }
 
     @Override
     public void delete(String uuid) {
-
+        int index = getIndex(uuid);
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        } else {
+            deleteMethod(index);
+            size--;
+        }
     }
-
-    @Override
-    public Resume[] getAll() {
-        return new Resume[0];
-    }
-
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     protected abstract int getIndex(String uuid);
+    protected abstract void updateMethod(int index, Resume r);
+    protected abstract void insertElement(Resume r, int index);
+    protected abstract Resume getMethod(int index);
+    protected abstract void deleteMethod(int index);
 }
