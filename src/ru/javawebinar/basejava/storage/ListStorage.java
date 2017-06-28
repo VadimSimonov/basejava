@@ -43,22 +43,18 @@ public class ListStorage extends AbstractStorage {
     protected int getIndex(String uuid) {
         return list.indexOf(new Resume(uuid));
     }
-
     @Override
     protected void updateMethod(int index, Resume r) {
         list.set(index,r);
     }
-
     @Override
     protected void insertElement(Resume r, int index) {
         list.add(index,r);
     }
-
     @Override
     protected Resume getMethod(int index) {
         return list.get(index);
     }
-
     @Override
     protected void deleteMethod(int index) {
         list.remove(index);

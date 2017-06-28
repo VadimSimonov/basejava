@@ -52,17 +52,14 @@ public class MapStorage extends AbstractStorage {
     protected void updateMethod(int index, Resume r) {
         map.put(String.valueOf(index),r);
     }
-
     @Override
     protected void insertElement(Resume r, int index) {
         map.put(String.valueOf(index),r);
     }
-
     @Override
     protected Resume getMethod(int index) {
         return map.get(index);
     }
-
     @Override
     protected void deleteMethod(int index) {
         map.remove(String.valueOf(index));
