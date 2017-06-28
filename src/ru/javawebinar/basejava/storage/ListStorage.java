@@ -1,9 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by simonov on 6/27/17.
@@ -14,11 +14,17 @@ public class ListStorage extends AbstractStorage {
     @Override
     public void clear() {
        list.clear();
+       size=0;
     }
 
     @Override
     public void update(Resume r) {
-        super.update(r);
+        int index = getIndex(r.getUuid());
+        if (index < 0) {
+            throw new NotExistStorageException(r.getUuid());
+        } else {
+            list.set(index,r);
+        }
     }
 
     @Override
@@ -29,12 +35,13 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume get(String uuid) {
-        return super.get(uuid);
+        return list.stream().filter(i -> i.getUuid().equals(uuid)).findFirst().orElse(null);
+
     }
 
     @Override
     public void delete(String uuid) {
-        super.delete(uuid);
+        list.remove(getIndex(uuid));
         size--;
     }
 
@@ -48,5 +55,10 @@ public class ListStorage extends AbstractStorage {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    protected int getIndex(String uuid) {
+        return list.indexOf(new Resume(uuid));
     }
 }

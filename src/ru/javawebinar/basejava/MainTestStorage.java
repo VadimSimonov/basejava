@@ -19,22 +19,19 @@ public class MainTestStorage {
         LIST_STORAGE.save(r3);
 
         printAll();
-        LIST_STORAGE.clear();
-        printAll();
-        /*
         System.out.println("Get r1: " + LIST_STORAGE.get(r1.getUuid()));
         System.out.println("Size: " + LIST_STORAGE.size());
-
         System.out.println("Get dummy: " + LIST_STORAGE.get("dummy"));
 
         printAll();
         LIST_STORAGE.delete(r1.getUuid());
         printAll();
+        LIST_STORAGE.update(r2);
+        printAll();
         LIST_STORAGE.clear();
         printAll();
 
         System.out.println("Size: " + LIST_STORAGE.size());
-        */
     }
 
     static void printAll() {

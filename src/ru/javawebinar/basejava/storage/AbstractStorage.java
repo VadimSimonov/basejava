@@ -11,8 +11,6 @@ import java.util.HashMap;
  */
 public abstract class AbstractStorage implements Storage {
 
-
-
     @Override
     public void clear() {
 
@@ -48,4 +46,6 @@ public abstract class AbstractStorage implements Storage {
     public int size() {
         return 0;
     }
+
+    protected abstract int getIndex(String uuid);
 }
