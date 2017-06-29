@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Collection;
@@ -17,18 +18,6 @@ public class MapStorage extends AbstractStorage {
     public void clear() {
         map.clear();
         size=0;
-    }
-
-    @Override
-    public void save(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        } else {
-            if (size>=0)
-            insertElement(r, size+1);
-            size++;
-        }
     }
 
     @Override
@@ -54,11 +43,12 @@ public class MapStorage extends AbstractStorage {
     }
     @Override
     protected void insertElement(Resume r, int index) {
-        map.put(String.valueOf(index),r);
+        if (size>=0)
+            map.put(String.valueOf(size+1), r);
     }
     @Override
     protected Resume getMethod(int index) {
-        return map.get(index);
+        return map.get(String.valueOf(index));
     }
     @Override
     protected void deleteMethod(int index) {
