@@ -9,7 +9,7 @@ import ru.javawebinar.basejava.model.Resume;
  * Created by simonov on 6/27/17.
  */
 public abstract class AbstractStorage implements Storage {
-    private static final int STORAGE_LIMIT = 5;
+    protected static final int STORAGE_LIMIT = 5;
     protected int size = 0;
 
     @Override
