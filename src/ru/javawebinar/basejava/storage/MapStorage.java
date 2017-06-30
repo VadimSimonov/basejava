@@ -4,7 +4,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,8 +23,7 @@ public class MapStorage extends AbstractStorage {
         // copy pasta from http://www.baeldung.com/convert-map-values-to-array-list-set
         Collection<Resume> values = map.values();
 
-        Resume[]resumes= values.toArray(new Resume[values.size()]);
-        return resumes;
+        return values.toArray(new Resume[values.size()]);
     }
 
     @Override
