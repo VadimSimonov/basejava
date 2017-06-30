@@ -1,18 +1,17 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by simonov on 6/27/17.
  */
 public class MapStorage extends AbstractStorage {
-    protected HashMap<String,Resume> map = new HashMap<>();
+    private HashMap<String,Resume> map = new HashMap<>();
 
     @Override
     public void clear() {
@@ -24,6 +23,7 @@ public class MapStorage extends AbstractStorage {
     public Resume[] getAll() {
         // copy pasta from http://www.baeldung.com/convert-map-values-to-array-list-set
         Collection<Resume> values = map.values();
+
         Resume[]resumes= values.toArray(new Resume[values.size()]);
         return resumes;
     }

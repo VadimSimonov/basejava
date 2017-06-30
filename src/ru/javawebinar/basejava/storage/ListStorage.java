@@ -19,8 +19,8 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume[] getAll() {
-        Resume[]array=new Resume[list.size()];
-        return array = list.toArray(array);
+        Resume[]array = new Resume[list.size()];
+        return list.toArray(array);
     }
 
 
@@ -34,11 +34,8 @@ public class ListStorage extends AbstractStorage {
     }
     @Override
     protected void insertElement(Resume r, int index) {
-            if (size == 0) {
+            if (size == 0 || size > 0)
                 list.add(size, r);
-            } else if (size > 0) {
-                list.add(size, r);
-            }
     }
     @Override
     protected Resume getMethod(int index) {
