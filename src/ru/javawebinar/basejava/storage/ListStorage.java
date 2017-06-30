@@ -3,12 +3,13 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by simonov on 6/27/17.
  */
 public class ListStorage extends AbstractStorage {
-    private ArrayList<Resume> list = new ArrayList<>();
+    private List<Resume> list = new ArrayList<>();
     @Override
     public void clear() {
        list.clear();
@@ -42,6 +43,5 @@ public class ListStorage extends AbstractStorage {
     @Override
     protected void deleteMethod(int index) {
         list.remove(index);
-        list.trimToSize();
     }
 }

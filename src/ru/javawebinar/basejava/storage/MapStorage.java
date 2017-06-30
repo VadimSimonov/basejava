@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,6 @@ public class MapStorage extends AbstractStorage {
     public Resume[] getAll() {
         // copy pasta from http://www.baeldung.com/convert-map-values-to-array-list-set
         Collection<Resume> values = map.values();
-
         return values.toArray(new Resume[values.size()]);
     }
 

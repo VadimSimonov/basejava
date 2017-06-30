@@ -18,45 +18,45 @@ public abstract class AbstractStorage implements Storage {
         if (index < 0) {
             throw new NotExistStorageException(r.getUuid());
         } else {
-            updateMethod(index,r);
+            updateMethod(index, r);
         }
     }
+
     @Override
     public void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (index >= 0) {
             throw new ExistStorageException(r.getUuid());
         }
-        if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        } else {
             insertElement(r, index);
             size++;
-        }
+
     }
 
     @Override
     public Resume get(String uuid) {
         int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
+        NotExistMethod(index,uuid);
         return getMethod(index);
     }
 
     @Override
     public void delete(String uuid) {
         int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
+        NotExistMethod(index,uuid);
             deleteMethod(index);
             size--;
         }
-    }
+
     @Override
     public int size() {
         return size;
+    }
+
+    private void NotExistMethod(int index, String uuid) {
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
     }
 
     protected abstract int getIndex(String uuid);
