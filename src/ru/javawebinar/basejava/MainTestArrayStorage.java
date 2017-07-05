@@ -2,17 +2,21 @@ package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.storage.ArrayStorage;
+import ru.javawebinar.basejava.storage.ListStorage;
+import ru.javawebinar.basejava.storage.MapUuidStorage;
 
 /**
  * Test ru.javawebinar.basejava.storage.ArrayStorage
  */
 public class MainTestArrayStorage {
-    static final ArrayStorage ARRAY_STORAGE = new ArrayStorage();
+//    static final ArrayStorage ARRAY_STORAGE = new ArrayStorage();
+   // static final ListStorage ARRAY_STORAGE = new ListStorage();
+static final MapUuidStorage ARRAY_STORAGE = new MapUuidStorage();
 
     public static void main(String[] args) {
-        Resume r1 = new Resume();
-        Resume r2 = new Resume();
-        Resume r3 = new Resume();
+        Resume r1 = new Resume("u5","777");
+        Resume r2 = new Resume("u333","123");
+        Resume r3 = new Resume("u1","245");
 
         ARRAY_STORAGE.save(r1);
         ARRAY_STORAGE.save(r2);
@@ -31,10 +35,17 @@ public class MainTestArrayStorage {
 
         System.out.println("Size: " + ARRAY_STORAGE.size());
     }
-
+/*
     static void printAll() {
         System.out.println("\nGet All");
         for (Resume r : ARRAY_STORAGE.getAll()) {
+            System.out.println(r);
+        }
+    }
+*/
+    static void printAll() {
+        System.out.println("\nGet All");
+        for (Resume r : ARRAY_STORAGE.getAllSorted()) {
             System.out.println(r);
         }
     }
