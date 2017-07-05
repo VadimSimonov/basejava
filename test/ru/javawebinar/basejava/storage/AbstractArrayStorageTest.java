@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public abstract class AbstractStorageTest {
+public abstract class AbstractArrayStorageTest {
     private Storage storage;
 
     private static final String UUID_1 = "uuid1";
@@ -33,7 +33,7 @@ public abstract class AbstractStorageTest {
         RESUME_4 = new Resume(UUID_4,UUID_4);
     }
 
-    protected AbstractStorageTest(Storage storage) {
+    protected AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
     }
 
@@ -69,16 +69,8 @@ public abstract class AbstractStorageTest {
     public void updateNotExist() throws Exception {
         storage.get("dummy");
     }
-/*
-    @Test
-    public void getAll() throws Exception {
-        Resume[] array = storage.getAll();
-        assertEquals(3, array.length);
-        assertEquals(RESUME_1, array[0]);
-        assertEquals(RESUME_2, array[1]);
-        assertEquals(RESUME_3, array[2]);
-    }
-    */
+
+
 
     @Test
     public void getAllSorted() throws Exception {
@@ -99,7 +91,17 @@ public abstract class AbstractStorageTest {
         storage.save(RESUME_1);
     }
 
-    // TODO remain only for Arrays implementations
+    @Test(expected = StorageException.class)
+    public void saveOverflow() throws Exception {
+        try {
+            for (int i = 4; i <= AbstractArrayStorage.STORAGE_LIMIT; i++) {
+                storage.save(new Resume());
+            }
+        } catch (StorageException e) {
+            Assert.fail();
+        }
+        storage.save(new Resume());
+    }
 
 
     @Test(expected = NotExistStorageException.class)
