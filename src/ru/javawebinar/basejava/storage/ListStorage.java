@@ -53,15 +53,14 @@ public class ListStorage extends AbstractStorage{
         return list.toArray(new Resume[list.size()]);
     }
 */
+
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume>result=new ArrayList<>();
+    protected List<Resume> getAllSortedMethod(List<Resume> result) {
         for (Resume a:list) {
             if (a!=null) {
                 result.add(a);
             }else break;
         }
-        result.sort(new UuidComparator());
         return result;
     }
 

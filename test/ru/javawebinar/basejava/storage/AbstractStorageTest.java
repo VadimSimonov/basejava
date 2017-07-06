@@ -1,11 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.List;
@@ -69,22 +67,11 @@ public abstract class AbstractStorageTest {
     public void updateNotExist() throws Exception {
         storage.get("dummy");
     }
-/*
-    @Test
-    public void getAll() throws Exception {
-        Resume[] array = storage.getAll();
-        assertEquals(3, array.length);
-        assertEquals(RESUME_1, array[0]);
-        assertEquals(RESUME_2, array[1]);
-        assertEquals(RESUME_3, array[2]);
-    }
-    */
 
     @Test
     public void getAllSorted() throws Exception {
         List<Resume>list=storage.getAllSorted();
         assertEquals(3, list.size());
-
     }
 
     @Test
@@ -98,8 +85,6 @@ public abstract class AbstractStorageTest {
     public void saveExist() throws Exception {
         storage.save(RESUME_1);
     }
-
-    // TODO remain only for Arrays implementations
 
 
     @Test(expected = NotExistStorageException.class)

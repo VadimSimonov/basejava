@@ -5,20 +5,19 @@ import java.util.UUID;
 /**
  * ru.javawebinar.basejava.model.Resume class
  */
-public class Resume{
+public class Resume {
 
     // Unique identifier
     private String uuid;
-
     private String fullName;
 
-    public Resume() {
-        uuid=UUID.randomUUID().toString();
+    public Resume(String fullName) {
+        this(UUID.randomUUID().toString(),fullName);
     }
 
-    public Resume(String uuid,String fullName) {
+    public Resume(String uuid, String fullName) {
         this.uuid = uuid;
-        this.fullName=fullName;
+        this.fullName = fullName;
     }
 
 
@@ -33,12 +32,14 @@ public class Resume{
 
         Resume resume = (Resume) o;
 
-        return uuid.equals(resume.uuid);
+        return uuid.equals(resume.uuid) && fullName.equals(resume.fullName);
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        int result = uuid.hashCode();
+        result = 31 * result + fullName.hashCode();
+        return result;
     }
 
     @Override

@@ -14,62 +14,50 @@ public class MapUuidStorage extends AbstractStorage {
 
     @Override
     protected String getSearchKey(String uuid) {
-        for (Map.Entry<String, Resume> entry : map.entrySet()) {
-            if (entry.getValue().getUuid().equals(uuid))
-                return entry.getKey();
-        }
-        return null;
+        return uuid;
     }
 
     @Override
-    protected void doUpdate(Resume r, Object searchKey) {
-        map.put(String.valueOf(searchKey),r);
+    protected void doUpdate(Resume r, Object uuid) {
+        //map.put(String.valueOf(searchKey),r);
+        map.put(String.valueOf(uuid),r);
     }
 
     @Override
-    protected boolean isExist(Object searchKey) {
-        return searchKey != null;
+    protected boolean isExist(Object uuid) {
+       // return uuid != null;
+        return map.containsKey(String.valueOf(uuid));
     }
 
     @Override
-    protected void doSave(Resume r, Object searchKey) {
-        if (size>=0)
-            map.put(String.valueOf(size+1), r);
-        size++;
+    protected void doSave(Resume r, Object uuid) {
+        if (map.size()>=0)
+            map.put(String.valueOf(uuid), r);
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
-        return map.get(String.valueOf(searchKey));
+    protected Resume doGet(Object uuid) {
+        return map.get(String.valueOf(uuid));
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
-        map.remove(String.valueOf(searchKey));
-        size--;
+    protected void doDelete(Object uuid) {
+        map.remove(String.valueOf(uuid));
     }
 
     @Override
     public void clear() {
         map.clear();
-        size=0;
     }
-/*
-    @Override
-    public Resume[] getAll() {
-        return new Resume[0];
-    }
-    */
 
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume>result = map.values().stream().collect(Collectors.toList());
-        result.sort(new UuidComparator());
+    protected List<Resume> getAllSortedMethod(List<Resume> result) {
+        result = map.values().stream().collect(Collectors.toList());
         return result;
     }
 
     @Override
     public int size() {
-        return size;
+        return map.size();
     }
 }

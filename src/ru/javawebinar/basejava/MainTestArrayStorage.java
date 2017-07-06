@@ -1,8 +1,6 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.ArrayStorage;
-import ru.javawebinar.basejava.storage.ListStorage;
 import ru.javawebinar.basejava.storage.MapUuidStorage;
 
 /**
@@ -35,14 +33,7 @@ static final MapUuidStorage ARRAY_STORAGE = new MapUuidStorage();
 
         System.out.println("Size: " + ARRAY_STORAGE.size());
     }
-/*
-    static void printAll() {
-        System.out.println("\nGet All");
-        for (Resume r : ARRAY_STORAGE.getAll()) {
-            System.out.println(r);
-        }
-    }
-*/
+
     static void printAll() {
         System.out.println("\nGet All");
         for (Resume r : ARRAY_STORAGE.getAllSorted()) {
