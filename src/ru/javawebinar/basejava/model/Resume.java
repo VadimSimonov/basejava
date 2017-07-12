@@ -18,6 +18,16 @@ public class Resume implements Comparable<Resume> {
     Map<Contacts,String>contacts=new HashMap<>();
     Map<SectionType,Content>content=new HashMap<>();
 
+    public String getContent(SectionType title)
+    {
+        return title.getTitle();
+    }
+
+    public String getContacts(Contacts title)
+    {
+        return title.getTitle();
+    }
+
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
