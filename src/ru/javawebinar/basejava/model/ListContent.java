@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by simonov on 7/11/17.
  */
-public class ListContent {
+public class ListContent extends Content{
     private List<String>list;
 
     public ListContent(List<String> list) {

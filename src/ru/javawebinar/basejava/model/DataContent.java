@@ -5,7 +5,7 @@ import javax.xml.crypto.Data;
 /**
  * Created by simonov on 7/11/17.
  */
-public class DataContent {
+public class DataContent extends Content {
     private Data data;
 
     public DataContent(Data data) {
