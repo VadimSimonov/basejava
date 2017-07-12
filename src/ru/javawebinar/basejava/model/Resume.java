@@ -12,8 +12,8 @@ public class Resume implements Comparable<Resume> {
 
     private final String fullName;
 
-    Map<Contacts,String>contacts=new EnumMap<Contacts,String>(Contacts.class);
-    Map<SectionType,Content>content=new EnumMap<SectionType,Content>(SectionType.class);
+    private Map<Contacts,String>contacts=new EnumMap<Contacts,String>(Contacts.class);
+    private Map<SectionType,Content>content=new EnumMap<SectionType,Content>(SectionType.class);
 
     public String getContent(SectionType title)
     {
