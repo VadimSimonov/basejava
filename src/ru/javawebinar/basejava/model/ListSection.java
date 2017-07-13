@@ -5,10 +5,10 @@ import java.util.List;
 /**
  * Created by simonov on 7/11/17.
  */
-public class ListContent extends Content{
+public class ListSection extends Section {
     private List<String>list;
 
-    public ListContent(List<String> list) {
+    public ListSection(List<String> list) {
         this.list = list;
     }
 

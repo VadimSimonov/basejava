@@ -3,10 +3,10 @@ package ru.javawebinar.basejava.model;
 /**
  * Created by simonov on 7/11/17.
  */
-public class TextContent extends Content {
+public class TextSection extends Section {
     private  String text;
 
-    public TextContent(String text) {
+    public TextSection(String text) {
         this.text = text;
     }
 

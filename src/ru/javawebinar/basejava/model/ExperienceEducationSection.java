@@ -5,7 +5,7 @@ import javax.xml.crypto.Data;
 /**
  * Created by simonov on 7/13/17.
  */
-public class ExperienceEducationSection extends Content {
+public class ExperienceEducationSection extends Section {
     private String title;
     private String url;
     private Data StartDate;

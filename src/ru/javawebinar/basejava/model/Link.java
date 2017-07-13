@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.model;
 /**
  * Created by simonov on 7/11/17.
  */
-public class Link  extends Content{
+public class Link  extends Section {
     private String name;
     private String url;
 
