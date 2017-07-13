@@ -6,28 +6,34 @@ import javax.xml.crypto.Data;
  * Created by simonov on 7/13/17.
  */
 public class ExperienceEducationSection extends Content {
-    private String name;
+    private String title;
     private String url;
-    private Data data;
+    private Data StartDate;
+    private Data EndDate;
     private String description;
 
-    public ExperienceEducationSection(String name, String url, Data data, String description) {
-        this.name = name;
+    public ExperienceEducationSection(String name, String url, Data StartDate, Data EndDate, String description) {
+        this.title = name;
         this.url = url;
-        this.data = data;
+        this.StartDate = StartDate;
+        this.EndDate = EndDate;
         this.description = description;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public Data getData() {
-        return data;
+    public Data getStartDate() {
+        return StartDate;
+    }
+
+    public Data getEndDate() {
+        return EndDate;
     }
 
     public String getDescription() {
