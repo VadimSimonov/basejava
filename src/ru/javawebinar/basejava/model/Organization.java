@@ -7,20 +7,20 @@ import java.util.List;
  * gkislin
  * 19.07.2016
  */
-public class Organization {
+public class Organization extends Section {
     private final Link homePage;
-    private List<ExtensionSection>list=new ArrayList<>();
+    private List<Position>list=new ArrayList<>();
 
     public Organization(String name, String url) {
         this.homePage = new Link(name, url);
 
     }
 
-    public void addExtension(ExtensionSection extensionSection) {
-        list.add(extensionSection);
+    public void addExtension(Position position) {
+        list.add(position);
     }
 
-    public List<ExtensionSection> getList() {
+    public List<Position> getList() {
         return list;
     }
 }

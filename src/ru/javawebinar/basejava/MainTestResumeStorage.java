@@ -15,20 +15,21 @@ public class MainTestResumeStorage {
 
     public static void main(String[] args) {
         List<Organization>list=new ArrayList<>();
-        List<ExtensionSection>listE=new ArrayList<>();
-        LocalDate startDate =LocalDate.of(1993,1,2);
-        LocalDate endDate=LocalDate.of(1996,1,2);
-     //   list.add(0,new Organization("Образование","http://google.ru",startDate,endDate,"санкт-питербург","Аспирантура (программист С, С++)"));
-        Resume r3=new Resume("Петрович");
-      //  Organization r4 = new Organization(0,new ExtensionSection(startDate,endDate,"Инженер (программист Fortran, C)","tetet"), list);
+        LocalDate startDate =LocalDate.of(1993,1,2);  LocalDate startDate2 =LocalDate.of(1997,1,2);
+        LocalDate endDate=LocalDate.of(1996,1,2);   LocalDate endDate2=LocalDate.of(1999,1,2);
 
+        Resume r3=new Resume("Петрович");
         r3.setSections(SectionType.EDUCATION,new OrganizationSection(list));
         r3.setContacts(ContactType.PHONE,"+8-909-123-45-67");
-        //listE.add(0,new ExtensionSection(startDate,endDate,"Инженер (программист Fortran, C)","tetet"));
+        Organization o=new Organization("Vasya","yandex.ru");
+        r3.setSections(SectionType.ACHIEVEMENT,new Organization("Vasya","yandex.ru"));
+        r3.setSections(SectionType.ACHIEVEMENT,o.addExtension(new Position(startDate,endDate,"piterburg","description")));
+
+/*
         Organization r1 = new Organization("Petr","http://google.ru");
-        r1.addExtension(new ExtensionSection(startDate,endDate,"piterburg","description"));
-
-
+        r1.addExtension(new Position(startDate,endDate,"piterburg","description"));
+        r1.addExtension(new Position(startDate2,endDate2,"piterburg2","description2"));
+*/
         //ARRAY_STORAGE.save(r1);
         //ARRAY_STORAGE.save(r2);
         //ARRAY_STORAGE.save(r1);
