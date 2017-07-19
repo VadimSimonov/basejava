@@ -11,8 +11,8 @@ import java.io.IOException;
 public class MainFile {
     public static void main(String[] args) {
         String filePath = "./.gitignore";
-
-        File file = new File(filePath);
+        File file = new File(".");
+        displayDirectoryContents(file);
         try {
             System.out.println(file.getCanonicalPath());
         } catch (IOException e) {
@@ -33,5 +33,22 @@ public class MainFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
-}
+
+    private static void displayDirectoryContents(File dir) {
+        try {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    System.out.println("directory:" + file.getCanonicalPath());
+                    displayDirectoryContents(file);
+                } else {
+                    System.out.println("     file:" + file.getCanonicalPath());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    }
