@@ -7,7 +7,7 @@ import java.util.List;
  * gkislin
  * 19.07.2016
  */
-public class Organization extends Section {
+public class Organization {
     private final Link homePage;
     private List<Position>list=new ArrayList<>();
 

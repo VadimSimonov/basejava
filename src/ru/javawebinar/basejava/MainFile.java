@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class MainFile {
     public static void main(String[] args) {
-        String filePath = ".\\.gitignore";
+        String filePath = "./.gitignore";
 
         File file = new File(filePath);
         try {
