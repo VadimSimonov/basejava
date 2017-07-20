@@ -27,8 +27,8 @@ public class Resume implements Comparable<Resume> {
         sections.put(sectionType,section);
     }
 
-    public void setContacts(Map<Contacts, String> contacts) {
-        this.contacts = contacts;
+    public void setContacts(Contacts contacts,String string) {
+        this.contacts.put(contacts,string);
     }
 
     public Resume(String fullName) {
