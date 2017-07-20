@@ -14,15 +14,12 @@ public class MainTestResumeStorage {
     public static void main(String[] args) {
         LocalDate startDate = LocalDate.of(1991,1,3);LocalDate startDate2 = LocalDate.of(1991,1,3);
         LocalDate endDate = LocalDate.of(1991,1,3);LocalDate endDate2 = LocalDate.of(1991,1,3);
-
-        Resume r1 = new Resume("Петрович Иван Васильевич");
         OrganizationSection OS = new OrganizationSection("Gazprom","gazprom.ru");
-        Organization organization= new Organization(startDate,endDate,"admin","windows");
-        Organization organization1= new Organization(startDate2,endDate2,"admin2","windows2");
-        r1.setContacts(Contacts.MAIL,"mail@mail.ru");
-        OS.setListsJob(organization);
-        OS.setListsJob(organization1);
+        OrganizationList organizationList = new OrganizationList(startDate,endDate,"admin","windows");
+        Resume r1 = new Resume("Петрович");
         r1.setSection(SectionType.EDUCATION,OS);
+        r1.setContacts(Contacts.MAIL,"mail@mail.ru");
+        OS.setListsJob(organizationList);
 
         /*
         ARRAY_STORAGE.save(r1);

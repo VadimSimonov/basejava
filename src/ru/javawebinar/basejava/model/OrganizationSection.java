@@ -8,14 +8,14 @@ import java.util.List;
  */
 public class OrganizationSection extends Section {
     private Link PageName;
-    private List<Organization>lists=new ArrayList<>();
+    private List<OrganizationList>lists=new ArrayList<>();
 
 
     public OrganizationSection(String name, String url) {
         this.PageName=new Link(name,url);
     }
 
-    public void setListsJob(Organization lists) {
+    public void setListsJob(OrganizationList lists) {
         this.lists.add(lists);
     }
 }
