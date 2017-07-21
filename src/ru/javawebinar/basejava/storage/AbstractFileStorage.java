@@ -39,7 +39,13 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        return directory.listFiles().length;
+        try {
+            return directory.listFiles().length;
+        }catch (NullPointerException e)
+        {
+            throw new NullPointerException("directory is empty");
+        }
+
     }
 
     @Override
@@ -74,30 +80,32 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        File[]files=file.listFiles();
-        if (files!=null)
-            for (File f:files) {
-                if (f.equals(file))
-                    return new Resume(f.getName());
-            }
-        return null;
+        try {
+            return doRead(file);
+        }catch (IOException e)
+        {
+            throw new StorageException("Read file error",file.getName(),e);
+        }
     }
 
     @Override
     protected void doDelete(File file) {
-        file.delete();
+            if(!file.delete());
+            throw new StorageException("File deleted error",file.getName());
     }
 
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume>list=new ArrayList<>();
         File[]files=directory.listFiles();
-        if (files!=null)
-            for (File f:files) {
-                list.add(new Resume(f.getName()));
+        if (files!=null) {
+            for (File f : files) {
+                list.add(doGet(f));
             }
+        }else throw new StorageException("Directory is clear",null);
             return list;
     }
 
     protected abstract void doWrite(Resume r, File file) throws IOException;
+    protected abstract Resume doRead(File file) throws IOException;
 }
