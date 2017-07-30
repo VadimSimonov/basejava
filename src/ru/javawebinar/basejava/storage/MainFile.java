@@ -1,4 +1,4 @@
-package ru.javawebinar.basejava;
+package ru.javawebinar.basejava.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
