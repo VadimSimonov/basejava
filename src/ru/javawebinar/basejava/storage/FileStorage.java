@@ -10,9 +10,11 @@ import java.io.*;
  */
 public class FileStorage {
     Strategy strategy;
+    File directory;
 
-    public FileStorage(File storageDir) {
-
+    public FileStorage(File directory,Strategy strategy) {
+        this.strategy = strategy;
+        this.directory=directory;
     }
 
     public void setStrategy(Strategy strategy) {
