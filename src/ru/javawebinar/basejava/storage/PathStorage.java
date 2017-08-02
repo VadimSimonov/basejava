@@ -8,24 +8,25 @@ import java.io.*;
 /**
  * Created by simonov on 8/1/17.
  */
-public class PathStorage extends AbstractPathStorage {
-    protected PathStorage(String directory) {
-        super(directory);
+public class PathStorage {
+    Strategy strategy;
+
+    public PathStorage(ObjectStreamStorage objectStreamStorage) {
     }
 
-    @Override
-    protected void doWrite(Resume r, OutputStream os) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
-            oos.writeObject(r);
+    public void setStrategy(Strategy strategy) {
+
+    }
+
+    public void ExecutedoWrite(Resume r, OutputStream os){
+        try {
+            strategy.doWrite(r,os);
+        } catch (IOException e) {
+            throw new StorageException("Write error",null,e);
         }
     }
 
-    @Override
-    protected Resume doRead(InputStream is) throws IOException {
-        try (ObjectInputStream ois = new ObjectInputStream(is)) {
-            return (Resume) ois.readObject();
-        } catch (ClassNotFoundException e) {
-            throw new StorageException("Error read resume", null, e);
-        }
+    public void ExecutedoRead(InputStream is) throws IOException {
+        strategy.doRead(is);
     }
 }
