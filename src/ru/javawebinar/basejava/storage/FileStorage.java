@@ -12,6 +12,7 @@ public class FileStorage {
     Strategy strategy;
 
     public FileStorage(File storageDir) {
+
     }
 
     public void setStrategy(Strategy strategy) {
