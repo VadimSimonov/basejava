@@ -8,17 +8,17 @@ import java.io.*;
 /**
  * Created by simonov on 8/1/17.
  */
-public class PathStorage {
+public class PathStorage extends AbstractPathStorage{
     Strategy strategy;
 
-    public PathStorage(ObjectStreamStorage objectStreamStorage) {
+    protected PathStorage(String dir,Strategy strategy) {
+        super(dir);
+        this.strategy=strategy;
     }
 
-    public void setStrategy(Strategy strategy) {
 
-    }
-
-    public void ExecutedoWrite(Resume r, OutputStream os){
+    @Override
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
         try {
             strategy.doWrite(r,os);
         } catch (IOException e) {
@@ -26,7 +26,8 @@ public class PathStorage {
         }
     }
 
-    public void ExecutedoRead(InputStream is) throws IOException {
-        strategy.doRead(is);
+    @Override
+    protected Resume doRead(InputStream is) throws IOException {
+        return strategy.doRead(is);
     }
 }
