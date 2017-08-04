@@ -4,6 +4,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        //Files.list(directory);
+        return Files.list(directory).count();
 
         String[] list = directory.list();
         if (list == null) {
