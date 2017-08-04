@@ -11,15 +11,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
+public class AbstractPathStorage extends AbstractStorage<Path> {
     private Path directory;
+    Strategy strategy;
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        try {
+            strategy.doWrite(r,os);
+        } catch (IOException e) {
+            throw new StorageException("Write error",null,e);
+        }
+    }
 
-    protected abstract Resume doRead(InputStream is) throws IOException;
+    protected Resume doRead(InputStream is) throws IOException {
+        return strategy.doRead(is);
+    }
 
-    protected AbstractPathStorage(String dir) {
+
+    protected AbstractPathStorage(String dir,Strategy strategy) {
         directory = Paths.get(dir);
+        this.strategy=strategy;
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
@@ -53,7 +64,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected void doUpdate(Resume r, Path Path) {
         try {
-            doWrite(r, new FileOutputStream(Path.toFile().toString()));
+            doWrite(r, new BufferedOutputStream(new FileOutputStream(Path.toFile().toString())));
         } catch (IOException e) {
             throw new StorageException("Path write error", r.getUuid(), e);
         }
@@ -61,6 +72,10 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
 
     @Override
     protected boolean isExist(Path Path) {
+        if (Files.isDirectory(Path))
+        {
+            return false;
+        }else
         return Files.exists(Path);
     }
 
@@ -77,7 +92,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected Resume doGet(Path Path) {
         try {
-            return doRead(new FileInputStream(Path.toFile()));
+            return doRead(new BufferedInputStream(new FileInputStream(Path.toFile())));
         } catch (IOException e) {
             throw new StorageException("Path read error",Path.toString(), e);
         }
