@@ -3,6 +3,10 @@ package ru.javawebinar.basejava.storage.serializer;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
@@ -20,18 +24,37 @@ public class DataStreamSerializer implements StreamSerializer {
                 dos.writeUTF(entry.getValue());
             }
             // TODO implements sections
+
+
             Map<SectionType,Section>section = r.getSections();
             dos.writeInt(section.size());
             for (Map.Entry<SectionType,Section> entry:section.entrySet())
             {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(String.valueOf(entry.getValue()));
+                SectionType sectionType=entry.getKey();
+                if (sectionType==SectionType.PERSONAL || sectionType==SectionType.OBJECTIVE) {
+                    dos.writeUTF(new TextSection(entry.getKey().name()).getContent());
+                    dos.writeUTF(new TextSection(entry.getValue().toString()).getContent());
+                } else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
+                    List<String>list=new ListSection(entry.getKey().name()).getItems();
+                    List<String>list2=new ListSection(entry.getValue().toString()).getItems();
+                    dos.writeUTF(list.iterator().next());
+                    dos.writeUTF(list2.iterator().next());
+                } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
+                    new Organization.Position().getStartDate();
+                    dos.writeUTF(new OrganizationSection(
+                    new Organization(new Link(entry.getKey().name(),entry.getValue().toString()),
+                            new Organization.Position(DataFormatMethod(entry.getValue().toString()).,))));
+                }
             }
-
-
-
         }
     }
+
+    private LocalDate DataFormatMethod(String name) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm/yyyy");
+        formatter = formatter.withLocale( Locale.ENGLISH);
+        return LocalDate.parse(name, formatter);
+    }
+
 
     @Override
     public Resume doRead(InputStream is) throws IOException {
@@ -46,11 +69,19 @@ public class DataStreamSerializer implements StreamSerializer {
             }
             // TODO implements sections
             int section = dis.readInt();
-
             for (int i = 0; i < section; i++) {
-                String sectionType=SectionType.valueOf(dis.readUTF()).getTitle();
-                if (sectionType.equals(SectionType.PERSONAL.getTitle()) || sectionType.equals(SectionType.ACHIEVEMENT.getTitle()) || sectionType.equals(SectionType.QUALIFICATIONS.getTitle()))
-                resume.addSection(SectionType.valueOf(dis.readUTF()),new TextSection(dis.readUTF()));
+
+                String sectionType = String.valueOf(SectionType.valueOf(dis.readUTF()));
+                SectionType st = SectionType.valueOf(dis.readUTF());
+
+                System.out.println(SectionType.PERSONAL.name().equals(st));
+                if (st.equals(SectionType.PERSONAL.getTitle()) || st.equals(SectionType.OBJECTIVE.getTitle())) {
+                    resume.addSection(SectionType.valueOf(dis.readUTF()), new TextSection(dis.readUTF()));
+                } else if (st.equals(SectionType.ACHIEVEMENT.getTitle()) || st.equals(SectionType.QUALIFICATIONS.getTitle())) {
+                    resume.addSection(SectionType.valueOf(dis.readUTF()), new ListSection(dis.readUTF()));
+                } else if (st.equals(SectionType.EXPERIENCE.getTitle()) || st.equals(SectionType.EDUCATION.getTitle())) {
+                   // resume.addSection(SectionType.valueOf(dis.readUTF()), new OrganizationSection(new Organization(dis.readUTF(),"2",)));
+                }
             }
 
             return resume;
