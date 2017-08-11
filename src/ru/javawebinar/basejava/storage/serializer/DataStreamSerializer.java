@@ -23,25 +23,25 @@ public class DataStreamSerializer implements StreamSerializer {
                 dos.writeUTF(entry.getValue());
             }
             // TODO implements sections
-            Map<SectionType,Section>section = r.getSections();
-            dos.writeInt(section.size());
-            for (Map.Entry<SectionType,Section> entry:section.entrySet())
+            Map<SectionType,Section>sectionmap = r.getSections();
+            dos.writeInt(sectionmap.size());
+            for (Map.Entry<SectionType,Section> entry:sectionmap.entrySet())
             {
                 SectionType sectionType=entry.getKey();
+                Section section=entry.getValue();
+
+                r.getSection(sectionType);
                 if (sectionType==SectionType.PERSONAL || sectionType==SectionType.OBJECTIVE) {
-                    dos.writeUTF(entry.getKey().name());
-                    dos.writeUTF(entry.getValue().toString());
-                } else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
+                    dos.writeUTF(entry.getKey().name()+"\t");
+                    dos.writeUTF(((TextSection)section).getContent());
+                }
+                else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
                     dos.writeUTF(entry.getKey().name());
                     dos.writeUTF(entry.getValue().toString());
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
                     dos.writeUTF(entry.getKey().name());
                  //   dos.writeUTF(entry.getValue().toString());
                     Section sectionNumber=entry.getValue();
-                    if (sectionNumber==entry.getValue())
-                    {
-                        dos.writeUTF(entry.getValue().toString());
-                    }
                 }
             }
         }

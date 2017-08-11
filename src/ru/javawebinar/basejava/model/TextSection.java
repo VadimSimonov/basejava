@@ -20,6 +20,7 @@ public class TextSection extends Section {
         return content;
     }
 
+
     @Override
     public String toString() {
         return content;
