@@ -5,7 +5,6 @@ import ru.javawebinar.basejava.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,26 +23,25 @@ public class DataStreamSerializer implements StreamSerializer {
                 dos.writeUTF(entry.getValue());
             }
             // TODO implements sections
-
-
             Map<SectionType,Section>section = r.getSections();
             dos.writeInt(section.size());
             for (Map.Entry<SectionType,Section> entry:section.entrySet())
             {
                 SectionType sectionType=entry.getKey();
                 if (sectionType==SectionType.PERSONAL || sectionType==SectionType.OBJECTIVE) {
-                    dos.writeUTF(new TextSection(entry.getKey().name()).getContent());
-                    dos.writeUTF(new TextSection(entry.getValue().toString()).getContent());
+                    dos.writeUTF(entry.getKey().name());
+                    dos.writeUTF(entry.getValue().toString());
                 } else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
-                    List<String>list=new ListSection(entry.getKey().name()).getItems();
-                    List<String>list2=new ListSection(entry.getValue().toString()).getItems();
-                    dos.writeUTF(list.iterator().next());
-                    dos.writeUTF(list2.iterator().next());
+                    dos.writeUTF(entry.getKey().name());
+                    dos.writeUTF(entry.getValue().toString());
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
-                    new Organization.Position().getStartDate();
-                    dos.writeUTF(new OrganizationSection(
-                    new Organization(new Link(entry.getKey().name(),entry.getValue().toString()),
-                            new Organization.Position(DataFormatMethod(entry.getValue().toString()).,))));
+                    dos.writeUTF(entry.getKey().name());
+                 //   dos.writeUTF(entry.getValue().toString());
+                    Section sectionNumber=entry.getValue();
+                    if (sectionNumber==entry.getValue())
+                    {
+                        dos.writeUTF(entry.getValue().toString());
+                    }
                 }
             }
         }
