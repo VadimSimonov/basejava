@@ -3,10 +3,7 @@ package ru.javawebinar.basejava.storage.serializer;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
@@ -46,7 +43,11 @@ public class DataStreamSerializer implements StreamSerializer {
                     dos.writeUTF(entry.getKey().name());
                     for (Organization organization : list) {
                         dos.writeUTF(organization.getHomePage().getName());
-                        dos.writeUTF(organization.getHomePage().getUrl());
+                        String str = organization.getHomePage().getUrl();
+                        if (str==null){
+                            dos.writeUTF("");
+                        }else
+                            dos.writeUTF(str);
 
                         List<Organization.Position> positionList = organization.getPositions();
                         for (Organization.Position aPositionList : positionList) {
@@ -55,18 +56,16 @@ public class DataStreamSerializer implements StreamSerializer {
                             dos.writeInt(aPositionList.getEndDate().getYear());
                             dos.writeInt(aPositionList.getEndDate().getMonth().getValue());
                             dos.writeUTF(aPositionList.getTitle());
+                            String str1=aPositionList.getDescription();
+                            if (str1==null){
+                                dos.writeUTF("");
+                            }else
                             dos.writeUTF(aPositionList.getDescription());
                         }
                     }
                 }
             }
         }
-    }
-
-    private LocalDate DataFormatMethod(String name) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm/yyyy");
-        formatter = formatter.withLocale( Locale.ENGLISH);
-        return LocalDate.parse(name, formatter);
     }
 
 
@@ -94,7 +93,7 @@ public class DataStreamSerializer implements StreamSerializer {
                 } else if (st.equals(SectionType.ACHIEVEMENT.getTitle()) || st.equals(SectionType.QUALIFICATIONS.getTitle())) {
                     resume.addSection(SectionType.valueOf(dis.readUTF()), new ListSection(dis.readUTF()));
                 } else if (st.equals(SectionType.EXPERIENCE.getTitle()) || st.equals(SectionType.EDUCATION.getTitle())) {
-                   // resume.addSection(SectionType.valueOf(dis.readUTF()), new OrganizationSection(new Organization(dis.readUTF(),"2",)));
+
                 }
             }
 
