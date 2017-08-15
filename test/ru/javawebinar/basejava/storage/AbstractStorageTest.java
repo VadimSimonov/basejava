@@ -42,23 +42,25 @@ public abstract class AbstractStorageTest {
         R1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
         R1.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));
         R1.addSection(SectionType.QUALIFICATIONS, new ListSection("Java", "SQL", "JavaScript"));
-        R1.addSection(SectionType.EXPERIENCE,
+        /* R1.addSection(SectionType.EXPERIENCE,
                 new OrganizationSection(
                         new Organization("gazprom", "http://gazprom.ru",
                                 new Organization.Position(2005, Month.JANUARY, "admin", "admin"),
                                 new Organization.Position(2001, Month.MARCH, 2005, Month.JANUARY, "sysadmin", "sysadmin"))));
+        */
         R1.addSection(SectionType.EDUCATION,
                 new OrganizationSection(
                         new Organization("institut MIFI", null,
                                 new Organization.Position(1996, Month.JANUARY, 2000, Month.DECEMBER, "aspirant", null),
                                 new Organization.Position(2001, Month.MARCH, 2005, Month.JANUARY, "student", "IT facultet")),
                         new Organization("lukoil", "http://lukoil.ru")));
-        R2.addContact(ContactType.SKYPE, "skype2");
-        R2.addContact(ContactType.PHONE, "22222");
-        R1.addSection(SectionType.EXPERIENCE,
+       // R2.addContact(ContactType.SKYPE, "skype2");
+      //  R2.addContact(ContactType.PHONE, "22222");
+        /* R1.addSection(SectionType.EXPERIENCE,
                 new OrganizationSection(
                         new Organization("sberbank", "http://sberbank.ru",
                                 new Organization.Position(2015, Month.JANUARY, "kassir", "kassir"))));
+        */
     }
 
     protected AbstractStorageTest(Storage storage) {

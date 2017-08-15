@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -23,25 +24,40 @@ public class DataStreamSerializer implements StreamSerializer {
                 dos.writeUTF(entry.getValue());
             }
             // TODO implements sections
-            Map<SectionType,Section>sectionmap = r.getSections();
-            dos.writeInt(sectionmap.size());
-            for (Map.Entry<SectionType,Section> entry:sectionmap.entrySet())
+            Map<SectionType,Section>sectional = r.getSections();
+            dos.writeInt(sectional.size());
+            for (Map.Entry<SectionType,Section> entry:sectional.entrySet())
             {
                 SectionType sectionType=entry.getKey();
                 Section section=entry.getValue();
-
-                r.getSection(sectionType);
                 if (sectionType==SectionType.PERSONAL || sectionType==SectionType.OBJECTIVE) {
-                    dos.writeUTF(entry.getKey().name()+"\t");
+                    dos.writeUTF(entry.getKey().name());
                     dos.writeUTF(((TextSection)section).getContent());
                 }
                 else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
+                    int size=(((ListSection)section).getItems()).size();
+                    List<String> list = (((ListSection) section).getItems());
                     dos.writeUTF(entry.getKey().name());
-                    dos.writeUTF(entry.getValue().toString());
+                    for (int i = 0; i <size ; i++) {
+                        dos.writeUTF(list.get(i));
+                    }
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
+                    List<Organization> list = (((OrganizationSection) section).getOrganizations());
                     dos.writeUTF(entry.getKey().name());
-                 //   dos.writeUTF(entry.getValue().toString());
-                    Section sectionNumber=entry.getValue();
+                    for (Organization organization : list) {
+                        dos.writeUTF(organization.getHomePage().getName());
+                        dos.writeUTF(organization.getHomePage().getUrl());
+
+                        List<Organization.Position> positionList = organization.getPositions();
+                        for (Organization.Position aPositionList : positionList) {
+                            dos.writeInt(aPositionList.getStartDate().getYear());
+                            dos.writeInt(aPositionList.getStartDate().getMonth().getValue());
+                            dos.writeInt(aPositionList.getEndDate().getYear());
+                            dos.writeInt(aPositionList.getEndDate().getMonth().getValue());
+                            dos.writeUTF(aPositionList.getTitle());
+                            dos.writeUTF(aPositionList.getDescription());
+                        }
+                    }
                 }
             }
         }
