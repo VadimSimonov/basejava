@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.storage.serializer;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,19 +29,24 @@ public class DataStreamSerializer implements StreamSerializer {
                 SectionType sectionType=entry.getKey();
                 Section section=entry.getValue();
                 if (sectionType==SectionType.PERSONAL || sectionType==SectionType.OBJECTIVE) {
-                    dos.writeUTF(entry.getKey().name());
+                    dos.writeUTF(sectionType.name());
                     dos.writeUTF(((TextSection)section).getContent());
                 }
+
                 else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
-                    int size=(((ListSection)section).getItems()).size();
+                  //  int size=(((ListSection)section).getItems()).size();
                     List<String> list = (((ListSection) section).getItems());
-                    dos.writeUTF(entry.getKey().name());
-                    for (int i = 0; i <size ; i++) {
+                    dos.writeInt(list.size());
+                    System.out.println("sizeList="+list.size());
+                    dos.writeUTF(sectionType.name());
+                    System.out.println("nameKey="+sectionType.name());
+                    for (int i = 0; i <list.size() ; i++) {
                         dos.writeUTF(list.get(i));
+                        System.out.println("wtiteData="+list.get(i));
                     }
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
                     List<Organization> list = (((OrganizationSection) section).getOrganizations());
-                    dos.writeUTF(entry.getKey().name());
+                    dos.writeUTF(sectionType.name());
                     for (Organization organization : list) {
                         dos.writeUTF(organization.getHomePage().getName());
                         String str = organization.getHomePage().getUrl();
@@ -76,28 +82,53 @@ public class DataStreamSerializer implements StreamSerializer {
             String fullName = dis.readUTF();
             // TODO implements contacts
             Resume resume = new Resume(uuid, fullName);
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+            int size=dis.readInt();
+            String string="";
+            String string1="";
+            String string2="";
+            for (int i = 0; i < 8; i++) {
+                string1=dis.readUTF();
+                string2=dis.readUTF();
+                resume.addContact(ContactType.valueOf(string1), string2);
+        //        string=string+" "+string1+" "+string2;
+
             }
+           // System.out.println(string);
+
+            int siz=dis.readInt();
+            String str="";
+            String str1="";
+            for (int i = 0; i <siz; i++) {
+                        str1=dis.readUTF();
+                        str=string+" "+str1;
+            }
+            System.out.println(str);
+
             // TODO implements sections
-            int section = dis.readInt();
-            for (int i = 0; i < section; i++) {
+            //int siz=dis.readInt();
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                if (sectionType.equals(SectionType.PERSONAL) || sectionType.equals(SectionType.OBJECTIVE)) {
+                    resume.addSection(sectionType, new TextSection(dis.readUTF()));
 
-                String sectionType = String.valueOf(SectionType.valueOf(dis.readUTF()));
-                SectionType st = SectionType.valueOf(dis.readUTF());
+                } else if (sectionType.equals(SectionType.ACHIEVEMENT) || sectionType.equals(SectionType.QUALIFICATIONS)) {
+                    List<String>list=ReadList(dis);
+                    resume.addSection(sectionType, new ListSection(list));
 
-                System.out.println(SectionType.PERSONAL.name().equals(st));
-                if (st.equals(SectionType.PERSONAL.getTitle()) || st.equals(SectionType.OBJECTIVE.getTitle())) {
-                    resume.addSection(SectionType.valueOf(dis.readUTF()), new TextSection(dis.readUTF()));
-                } else if (st.equals(SectionType.ACHIEVEMENT.getTitle()) || st.equals(SectionType.QUALIFICATIONS.getTitle())) {
-                    resume.addSection(SectionType.valueOf(dis.readUTF()), new ListSection(dis.readUTF()));
-                } else if (st.equals(SectionType.EXPERIENCE.getTitle()) || st.equals(SectionType.EDUCATION.getTitle())) {
+                } else if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
 
                 }
-            }
+
 
             return resume;
         }
+    }
+
+    private List<String> ReadList(DataInputStream dis) throws IOException {
+        int size=dis.readInt();
+        List<String> list=new ArrayList<>();
+        for (int j = 0; j <size ; j++) {
+            list.add(dis.readUTF());
+        }
+        return list;
     }
 }
