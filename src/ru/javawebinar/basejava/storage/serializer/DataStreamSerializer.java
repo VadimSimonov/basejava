@@ -3,6 +3,8 @@ package ru.javawebinar.basejava.storage.serializer;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
+import java.text.DateFormatSymbols;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,18 +36,15 @@ public class DataStreamSerializer implements StreamSerializer {
                 }
 
                 else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
-                  //  int size=(((ListSection)section).getItems()).size();
                     List<String> list = (((ListSection) section).getItems());
                     dos.writeInt(list.size());
-                    System.out.println("sizeList="+list.size());
                     dos.writeUTF(sectionType.name());
-                    System.out.println("nameKey="+sectionType.name());
                     for (int i = 0; i <list.size() ; i++) {
                         dos.writeUTF(list.get(i));
-                        System.out.println("wtiteData="+list.get(i));
                     }
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
                     List<Organization> list = (((OrganizationSection) section).getOrganizations());
+                    dos.writeInt(list.size());
                     dos.writeUTF(sectionType.name());
                     for (Organization organization : list) {
                         dos.writeUTF(organization.getHomePage().getName());
@@ -56,6 +55,7 @@ public class DataStreamSerializer implements StreamSerializer {
                             dos.writeUTF(str);
 
                         List<Organization.Position> positionList = organization.getPositions();
+                        dos.writeInt(positionList.size());
                         for (Organization.Position aPositionList : positionList) {
                             dos.writeInt(aPositionList.getStartDate().getYear());
                             dos.writeInt(aPositionList.getStartDate().getMonth().getValue());
@@ -82,51 +82,93 @@ public class DataStreamSerializer implements StreamSerializer {
             String fullName = dis.readUTF();
             // TODO implements contacts
             Resume resume = new Resume(uuid, fullName);
-            int size=dis.readInt();
-            String string="";
-            String string1="";
-            String string2="";
-            for (int i = 0; i < 8; i++) {
-                string1=dis.readUTF();
-                string2=dis.readUTF();
-                resume.addContact(ContactType.valueOf(string1), string2);
-        //        string=string+" "+string1+" "+string2;
-
+            int size = dis.readInt();
+            for (int i = 0; i < size; i++) {
+                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
-           // System.out.println(string);
 
-            int siz=dis.readInt();
-            String str="";
-            String str1="";
-            for (int i = 0; i <siz; i++) {
-                        str1=dis.readUTF();
-                        str=string+" "+str1;
-            }
-            System.out.println(str);
-
-            // TODO implements sections
-            //int siz=dis.readInt();
+            int sizeSection = dis.readInt();
+            int sizeListA=0;
+            int sizeListQ=0;
+            int sizeOrg=0;
+            int sizeP=0;
+            //TODO implements sections
+            for (int i = 0; i < sizeSection; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                if (sectionType.equals(SectionType.PERSONAL) || sectionType.equals(SectionType.OBJECTIVE)) {
+
+                if (sectionType.equals(SectionType.PERSONAL)) {
                     resume.addSection(sectionType, new TextSection(dis.readUTF()));
-
-                } else if (sectionType.equals(SectionType.ACHIEVEMENT) || sectionType.equals(SectionType.QUALIFICATIONS)) {
-                    List<String>list=ReadList(dis);
+                } else if (sectionType.equals(SectionType.OBJECTIVE))
+                {
+                    resume.addSection(sectionType, new TextSection(dis.readUTF()));
+                    sizeListA=dis.readInt();
+                }else if (sectionType.equals(SectionType.ACHIEVEMENT)) {
+                    List<String> list = ReadList(dis,sizeListA);
                     resume.addSection(sectionType, new ListSection(list));
+                    sizeListQ=dis.readInt();
+                } else if (sectionType.equals(SectionType.QUALIFICATIONS))
+                    {
+                        List<String> list = ReadList(dis,sizeListQ);
+                        resume.addSection(sectionType, new ListSection(list));
+                        sizeOrg = dis.readInt();
+                    }else
+                    if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
+                        for (int j = 0; j <sizeOrg ; j++) {
+                            String name=dis.readUTF();
+                            String url=dis.readUTF();
 
-                } else if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
+                            sizeP=dis.readInt();
+  /*
+                            int startY=dis.readInt();
+                            int startM=dis.readInt();
+                            int endY = dis.readInt();
+                            int endM=dis.readInt();
+                            String title=dis.readUTF();
+                            String desc=dis.readUTF();
+*/                          List<Organization.Position> list = WhilePosition(sizeP, dis);
+                         //  resume.addSection(sectionType,new Organization(new Link(name,url),list));
+                            resume.addSection(sectionType,new OrganizationSection(new Organization(WhileOrganization(sizeOrg,sizeP,dis))));
 
+                            for (int k = 0; k <list.size() ; k++) {
+                                System.out.println(list.get(i));
+                            }
+
+                        }
+                        for (int j = 0; j <sizeP; j++) {
+                        }
                 }
 
-
+            }
             return resume;
         }
     }
 
-    private List<String> ReadList(DataInputStream dis) throws IOException {
-        int size=dis.readInt();
+    private List<Organization> WhileOrganization(int sizeOrg, int sizeP, DataInputStream dis) throws IOException {
+        List<Organization>list=new ArrayList<>();
+        for (int j = 0; j <sizeOrg ; j++) {
+            String name = dis.readUTF();
+            String url = dis.readUTF();
+            list.add(new Organization(name,url,WhilePosition(sizeP,dis)));
+        }
+        return list;
+    }
+
+    private List<Organization.Position> WhilePosition(int sizeP, DataInputStream dis) throws IOException {
+        List<Organization.Position>list=new ArrayList<>();
+        for (int i = 0; i <sizeP ; i++) {
+            list.add(new Organization.Position(dis.readInt(),getMonth(dis.readInt()),dis.readInt(),getMonth(dis.readInt()),dis.readUTF(),dis.readUTF()));
+        }
+
+        return list;
+    }
+
+    private Month getMonth(int startM) {
+        return Month.of(Month.valueOf(new DateFormatSymbols().getMonths()[startM-1].toUpperCase()).getValue());
+    }
+
+    private List<String> ReadList(DataInputStream dis, int sizeList) throws IOException {
         List<String> list=new ArrayList<>();
-        for (int j = 0; j <size ; j++) {
+        for (int j = 0; j <sizeList ; j++) {
             list.add(dis.readUTF());
         }
         return list;
