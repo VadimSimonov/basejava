@@ -62,8 +62,6 @@ public abstract class AbstractStorageTest {
                 new OrganizationSection(
                         new Organization("sberbank", "http://sberbank.ru",
                                 new Organization.Position(2015, Month.JANUARY, "kassir", "kassir"))));
-
-
     }
 
     protected AbstractStorageTest(Storage storage) {

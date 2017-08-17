@@ -113,29 +113,10 @@ public class DataStreamSerializer implements StreamSerializer {
                         sizeOrg = dis.readInt();
                     }else
                     if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
-                        for (int j = 0; j <sizeOrg ; j++) {
-                            String name=dis.readUTF();
-                            String url=dis.readUTF();
-
+                        String name = dis.readUTF();
+                        String url = dis.readUTF();
                             sizeP=dis.readInt();
-  /*
-                            int startY=dis.readInt();
-                            int startM=dis.readInt();
-                            int endY = dis.readInt();
-                            int endM=dis.readInt();
-                            String title=dis.readUTF();
-                            String desc=dis.readUTF();
-*/                          List<Organization.Position> list = WhilePosition(sizeP, dis);
-                         //  resume.addSection(sectionType,new Organization(new Link(name,url),list));
-                            resume.addSection(sectionType,new OrganizationSection(new Organization(WhileOrganization(sizeOrg,sizeP,dis))));
-
-                            for (int k = 0; k <list.size() ; k++) {
-                                System.out.println(list.get(i));
-                            }
-
-                        }
-                        for (int j = 0; j <sizeP; j++) {
-                        }
+                            resume.addSection(sectionType,new OrganizationSection(WhileOrganization(name,url,sizeOrg,sizeP,dis)));
                 }
 
             }
@@ -143,12 +124,11 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    private List<Organization> WhileOrganization(int sizeOrg, int sizeP, DataInputStream dis) throws IOException {
+    private List<Organization> WhileOrganization(String name, String url, int sizeOrg, int sizeP, DataInputStream dis) throws IOException {
         List<Organization>list=new ArrayList<>();
         for (int j = 0; j <sizeOrg ; j++) {
-            String name = dis.readUTF();
-            String url = dis.readUTF();
-            list.add(new Organization(name,url,WhilePosition(sizeP,dis)));
+
+            list.add(new Organization(new Link(name,url),WhilePosition(sizeP,dis)));
         }
         return list;
     }
