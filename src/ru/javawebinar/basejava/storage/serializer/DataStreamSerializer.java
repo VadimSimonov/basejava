@@ -37,15 +37,15 @@ public class DataStreamSerializer implements StreamSerializer {
 
                 else if (sectionType==SectionType.ACHIEVEMENT || sectionType==SectionType.QUALIFICATIONS) {
                     List<String> list = (((ListSection) section).getItems());
-                    dos.writeInt(list.size());
                     dos.writeUTF(sectionType.name());
+                    dos.writeInt(list.size());
                     for (int i = 0; i <list.size() ; i++) {
                         dos.writeUTF(list.get(i));
                     }
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
                     List<Organization> list = (((OrganizationSection) section).getOrganizations());
-                    dos.writeInt(list.size());
                     dos.writeUTF(sectionType.name());
+                    dos.writeInt(list.size());
                     for (Organization organization : list) {
                         dos.writeUTF(organization.getHomePage().getName());
                         String str = organization.getHomePage().getUrl();
@@ -101,18 +101,20 @@ public class DataStreamSerializer implements StreamSerializer {
                 } else if (sectionType.equals(SectionType.OBJECTIVE))
                 {
                     resume.addSection(sectionType, new TextSection(dis.readUTF()));
-                    sizeListA=dis.readInt();
                 }else if (sectionType.equals(SectionType.ACHIEVEMENT)) {
+                    sizeListA=dis.readInt();
                     List<String> list = ReadList(dis,sizeListA);
                     resume.addSection(sectionType, new ListSection(list));
-                    sizeListQ=dis.readInt();
+
                 } else if (sectionType.equals(SectionType.QUALIFICATIONS))
                     {
+                        sizeListQ=dis.readInt();
                         List<String> list = ReadList(dis,sizeListQ);
                         resume.addSection(sectionType, new ListSection(list));
-                        sizeOrg = dis.readInt();
+
                     }else
                     if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
+                        sizeOrg = dis.readInt();
                         String name = dis.readUTF();
                         String url = dis.readUTF();
                             sizeP=dis.readInt();
@@ -136,7 +138,15 @@ public class DataStreamSerializer implements StreamSerializer {
     private List<Organization.Position> WhilePosition(int sizeP, DataInputStream dis) throws IOException {
         List<Organization.Position>list=new ArrayList<>();
         for (int i = 0; i <sizeP ; i++) {
-            list.add(new Organization.Position(dis.readInt(),getMonth(dis.readInt()),dis.readInt(),getMonth(dis.readInt()),dis.readUTF(),dis.readUTF()));
+            int ii=dis.readInt();
+            int mm=dis.readInt();
+            Month m=getMonth(mm);
+            int yy=dis.readInt();
+            int hh=dis.readInt();
+            Month pp=getMonth(hh);
+            String ss=dis.readUTF();
+            String kk=dis.readUTF();
+            list.add(new Organization.Position(ii, m, yy, pp, ss, kk));
         }
 
         return list;
