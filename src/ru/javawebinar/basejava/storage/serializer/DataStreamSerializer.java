@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
-
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -39,8 +38,8 @@ public class DataStreamSerializer implements StreamSerializer {
                     List<String> list = (((ListSection) section).getItems());
                     dos.writeUTF(sectionType.name());
                     dos.writeInt(list.size());
-                    for (int i = 0; i <list.size() ; i++) {
-                        dos.writeUTF(list.get(i));
+                    for (String aList : list) {
+                        dos.writeUTF(aList);
                     }
                 } else if (sectionType==SectionType.EXPERIENCE || sectionType==SectionType.EDUCATION) {
                     List<Organization> list = (((OrganizationSection) section).getOrganizations());
@@ -88,10 +87,9 @@ public class DataStreamSerializer implements StreamSerializer {
             }
 
             int sizeSection = dis.readInt();
-            int sizeListA=0;
-            int sizeListQ=0;
-            int sizeOrg=0;
-            int sizeP=0;
+            int sizeListA;
+            int sizeListQ;
+            int sizeOrg;
             //TODO implements sections
             for (int i = 0; i < sizeSection; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
@@ -115,38 +113,28 @@ public class DataStreamSerializer implements StreamSerializer {
                     }else
                     if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
                         sizeOrg = dis.readInt();
-                        String name = dis.readUTF();
-                        String url = dis.readUTF();
-                            sizeP=dis.readInt();
-                            resume.addSection(sectionType,new OrganizationSection(WhileOrganization(name,url,sizeOrg,sizeP,dis)));
+                        for (int j = 0; j <sizeOrg ; j++) {
+                            String name = dis.readUTF();
+                            String url = dis.readUTF();
+                            resume.addSection(sectionType, new OrganizationSection(WhileOrganization(name,url,dis)));
+                        }
                 }
-
             }
             return resume;
         }
     }
 
-    private List<Organization> WhileOrganization(String name, String url, int sizeOrg, int sizeP, DataInputStream dis) throws IOException {
+    private List<Organization> WhileOrganization(String name, String url, DataInputStream dis) throws IOException {
         List<Organization>list=new ArrayList<>();
-        for (int j = 0; j <sizeOrg ; j++) {
-
+            int sizeP=dis.readInt();
             list.add(new Organization(new Link(name,url),WhilePosition(sizeP,dis)));
-        }
         return list;
     }
 
     private List<Organization.Position> WhilePosition(int sizeP, DataInputStream dis) throws IOException {
         List<Organization.Position>list=new ArrayList<>();
         for (int i = 0; i <sizeP ; i++) {
-            int ii=dis.readInt();
-            int mm=dis.readInt();
-            Month m=getMonth(mm);
-            int yy=dis.readInt();
-            int hh=dis.readInt();
-            Month pp=getMonth(hh);
-            String ss=dis.readUTF();
-            String kk=dis.readUTF();
-            list.add(new Organization.Position(ii, m, yy, pp, ss, kk));
+            list.add(new Organization.Position(dis.readInt(),getMonth(dis.readInt()), dis.readInt(), getMonth(dis.readInt()), dis.readUTF(), dis.readUTF()));
         }
 
         return list;
