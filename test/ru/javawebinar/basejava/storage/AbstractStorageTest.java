@@ -10,6 +10,7 @@ import java.io.File;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -132,9 +133,26 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() throws Exception {
-        assertGet(R1);
-        assertGet(R2);
-        assertGet(R3);
+      //  assertGet(R1);
+      //  assertGet(R2);
+       // assertGet(R3);
+        assertGet2(R1);
+    }
+
+    private void assertGet2(Resume r1) {
+        Map<ContactType, String> contacts = r1.getContacts();
+        Map<SectionType, Section> sec = r1.getSections();
+
+        Resume resume = storage.get("uuid1");
+        Map<ContactType, String> contactsResume=resume.getContacts();
+        Map<SectionType, Section> resumeSec = r1.getSections();
+
+        for (int i = 0; i <sec.size() ; i++) {
+            Section Sec = sec.get(i);
+            Section Rs=resumeSec.get(i);
+            assertEquals(Sec,Rs);
+        }
+
     }
 
     @Test(expected = NotExistStorageException.class)
