@@ -8,9 +8,7 @@ import ru.javawebinar.basejava.model.*;
 
 import java.io.File;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -147,11 +145,15 @@ public abstract class AbstractStorageTest {
         Map<ContactType, String> contactsResume=resume.getContacts();
         Map<SectionType, Section> resumeSec = r1.getSections();
 
-        for (int i = 0; i <sec.size() ; i++) {
-            Section Sec = sec.get(i);
-            Section Rs=resumeSec.get(i);
-            assertEquals(Sec,Rs);
-        }
+            for (int j = 0; j <contacts.values().size(); j++) {
+                String f=contacts.values().iterator().next();
+                String f2=contactsResume.values().iterator().next();
+                assertEquals(f,f2);
+            }
+
+
+
+
 
     }
 
