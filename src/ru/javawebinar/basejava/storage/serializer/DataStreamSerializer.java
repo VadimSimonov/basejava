@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
+    Resume resume;
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -80,37 +81,23 @@ public class DataStreamSerializer implements StreamSerializer {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             // TODO implements contacts
-            Resume resume = new Resume(uuid, fullName);
+             resume = new Resume(uuid, fullName);
             int size = dis.readInt();
             for (int i = 0; i < size; i++) {
                 resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
 
             int sizeSection = dis.readInt();
-            int sizeListA;
-            int sizeListQ;
             int sizeOrg;
             //TODO implements sections
             for (int i = 0; i < sizeSection; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
 
-                if (sectionType.equals(SectionType.PERSONAL)) {
+                if (sectionType.equals(SectionType.PERSONAL) || (sectionType.equals(SectionType.OBJECTIVE))) {
                     resume.addSection(sectionType, new TextSection(dis.readUTF()));
-                } else if (sectionType.equals(SectionType.OBJECTIVE))
-                {
-                    resume.addSection(sectionType, new TextSection(dis.readUTF()));
-                }else if (sectionType.equals(SectionType.ACHIEVEMENT)) {
-                    sizeListA=dis.readInt();
-                    List<String> list = ReadList(dis,sizeListA);
-                    resume.addSection(sectionType, new ListSection(list));
-
-                } else if (sectionType.equals(SectionType.QUALIFICATIONS))
-                    {
-                        sizeListQ=dis.readInt();
-                        List<String> list = ReadList(dis,sizeListQ);
-                        resume.addSection(sectionType, new ListSection(list));
-
-                    }else
+                } else if (sectionType.equals(SectionType.ACHIEVEMENT) ||(sectionType.equals(SectionType.QUALIFICATIONS))) {
+                    doReadSectionList(dis,sectionType);
+                } else
                     if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
                         sizeOrg = dis.readInt();
                             resume.addSection(sectionType, new OrganizationSection(WhileOrganization(sizeOrg,dis)));
@@ -118,6 +105,12 @@ public class DataStreamSerializer implements StreamSerializer {
             }
             return resume;
         }
+    }
+
+    private void doReadSectionList(DataInputStream dis, SectionType sectionType) throws IOException {
+        int sizeList = dis.readInt();
+        List<String> list = ReadList(dis,sizeList);
+        resume.addSection(sectionType, new ListSection(list));
     }
 
     private List<Organization> WhileOrganization(int sizeOrg, DataInputStream dis) throws IOException {
