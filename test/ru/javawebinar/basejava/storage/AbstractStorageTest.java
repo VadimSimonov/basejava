@@ -131,9 +131,9 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() throws Exception {
-      //  assertGet(R1);
-      //  assertGet(R2);
-       // assertGet(R3);
+        assertGet(R1);
+        assertGet(R2);
+        assertGet(R3);
         assertGet2(R1);
     }
 
@@ -143,18 +143,29 @@ public abstract class AbstractStorageTest {
 
         Resume resume = storage.get("uuid1");
         Map<ContactType, String> contactsResume=resume.getContacts();
-        Map<SectionType, Section> resumeSec = r1.getSections();
+        Map<SectionType, Section> resumeSec = resume.getSections();
 
-            for (int j = 0; j <contacts.values().size(); j++) {
-                String f=contacts.values().iterator().next();
-                String f2=contactsResume.values().iterator().next();
-                assertEquals(f,f2);
+        //System.out.println("contacts="+equalMaps(contacts,contactsResume));
+        System.out.println("section="+equalMaps(sec,resumeSec));
+
+    }
+
+
+    boolean equalMaps(Map<SectionType, Section> m1, Map<SectionType, Section> m2) {
+        if (m1.size() != m2.size())
+        {
+            System.out.println(m1.size()+"размеры не равны"+m2.size());
+            return false;
+        }
+        for (SectionType key: m1.keySet()) {
+            Section f = m1.get(key);
+            Section f2 = m2.get(key);
+            if (!f.equals(f2)){
+                System.out.println(f + " не равны" + f2);
+                return false;
             }
-
-
-
-
-
+        }
+        return true;
     }
 
     @Test(expected = NotExistStorageException.class)

@@ -113,21 +113,21 @@ public class DataStreamSerializer implements StreamSerializer {
                     }else
                     if (sectionType.equals(SectionType.EXPERIENCE) || sectionType.equals(SectionType.EDUCATION)) {
                         sizeOrg = dis.readInt();
-                        for (int j = 0; j <sizeOrg ; j++) {
-                            String name = dis.readUTF();
-                            String url = dis.readUTF();
-                            resume.addSection(sectionType, new OrganizationSection(WhileOrganization(name,url,dis)));
-                        }
+                            resume.addSection(sectionType, new OrganizationSection(WhileOrganization(sizeOrg,dis)));
                 }
             }
             return resume;
         }
     }
 
-    private List<Organization> WhileOrganization(String name, String url, DataInputStream dis) throws IOException {
-        List<Organization>list=new ArrayList<>();
-            int sizeP=dis.readInt();
-            list.add(new Organization(new Link(name,url),WhilePosition(sizeP,dis)));
+    private List<Organization> WhileOrganization(int sizeOrg, DataInputStream dis) throws IOException {
+        List<Organization> list = new ArrayList<>();
+        for (int j = 0; j <sizeOrg ; j++) {
+            String name = dis.readUTF();
+            String url = dis.readUTF();
+            int sizeP = dis.readInt();
+            list.add(new Organization(new Link(name, url), WhilePosition(sizeP, dis)));
+        }
         return list;
     }
 

@@ -22,6 +22,10 @@ public class Link implements Serializable {
     public Link(String name, String url) {
         Objects.requireNonNull(name, "name must not be null");
         this.name = name;
+        if (Objects.equals(url, ""))
+        {
+            this.url=null;
+        }else
         this.url = url;
     }
 
