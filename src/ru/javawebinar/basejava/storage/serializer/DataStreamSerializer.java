@@ -34,13 +34,13 @@ public class DataStreamSerializer implements StreamSerializer {
                 {
                     case PERSONAL:
                     case OBJECTIVE:
-                        dos.writeUTF(sectionType.name());
+                        dosWrite(sectionType,dos);
                         dos.writeUTF(((TextSection)section).getContent());
                         break;
                     case QUALIFICATIONS:
                     case ACHIEVEMENT:
                         List<String> list = (((ListSection) section).getItems());
-                        dos.writeUTF(sectionType.name());
+                        dosWrite(sectionType,dos);
                         dos.writeInt(list.size());
                         for (String aList : list) {
                             dos.writeUTF(aList);
@@ -49,7 +49,7 @@ public class DataStreamSerializer implements StreamSerializer {
                     case EDUCATION:
                     case EXPERIENCE:
                         List<Organization> organizationList = (((OrganizationSection) section).getOrganizations());
-                        dos.writeUTF(sectionType.name());
+                        dosWrite(sectionType,dos);
                         dos.writeInt(organizationList.size());
                         for (Organization organization : organizationList) {
                             dos.writeUTF(organization.getHomePage().getName());
@@ -68,6 +68,10 @@ public class DataStreamSerializer implements StreamSerializer {
                 }
             }
         }
+    }
+
+    private void dosWrite(SectionType sectionType, DataOutputStream dos) throws IOException {
+        dos.writeUTF(sectionType.name());
     }
 
     @Override
