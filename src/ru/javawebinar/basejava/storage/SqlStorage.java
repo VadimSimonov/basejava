@@ -6,10 +6,11 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.ConnectionFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage {
-    public final ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
@@ -42,6 +43,15 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
+            ps.setString(1, r.getUuid());
+            ps.setString(2, r.getFullName());
+            ps.execute();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+
 
     }
 
@@ -60,16 +70,53 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
-
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM resume WHERE uuid=?")) {
+            ps.setString(1, uuid);
+            ps.execute();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 
     @Override
     public List<Resume> getAllSorted() {
-        return null;
+        //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
+
+        List<Resume>resumes=new ArrayList<>();
+        try(Connection connection = connectionFactory.getConnection();
+            PreparedStatement ps=connection.prepareStatement("SELECT * from resume")){
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+            {
+                Resume resume=new Resume(rs.getString("uuid"),rs.getString("full_name"));
+                resumes.add(resume);
+            }
+
+
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+
+
+        return resumes;
     }
 
     @Override
     public int size() {
-        return 0;
+        int colSize=0;
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT count(*) FROM resume")) {
+            ResultSet rs=ps.executeQuery();
+            while (rs.next())
+            {
+                colSize=rs.getInt(1);
+            }
+
+            return colSize;
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+
     }
 }
