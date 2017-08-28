@@ -14,7 +14,7 @@ import java.util.List;
 public class SqlStorage implements Storage {
     private final ConnectionFactory connectionFactory;
 
-    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+    private SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
@@ -75,7 +75,8 @@ public class SqlStorage implements Storage {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement("DELETE FROM resume WHERE uuid=?")) {
             ps.setString(1, uuid);
-            ps.execute();
+            int eu=ps.executeUpdate();
+            if (eu==0) throw new NotExistStorageException(uuid);
         } catch (SQLException e) {
             throw new NotExistStorageException(uuid);
         }
