@@ -20,25 +20,22 @@ public class SQLHelper {
 */
 
 
-    public void sqlexecute(String sql, String uuid)
-    {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    public void sqlexecute(String sql, String uuid) throws SQLException {
+        Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, uuid);
             int eu=ps.executeUpdate();
             if (eu==0) {
                 throw new NotExistStorageException(uuid);
             }
-        } catch (SQLException e) {
-            throw new StorageException(uuid);
-        }
+
     }
 
 
-    public static void sqlexecute(String sql, ConnectionFactory connectionFactory) {
+    public static PreparedStatement sqlexecute(String sql, ConnectionFactory connectionFactory) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.execute();
+            return ps;
         } catch (SQLException e) {
             throw new StorageException(e);
         }

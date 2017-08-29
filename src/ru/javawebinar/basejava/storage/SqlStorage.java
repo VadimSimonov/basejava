@@ -21,7 +21,12 @@ public class SqlStorage implements Storage {
 
     @Override
     public void clear() {
-        SQLHelper.sqlexecute("DELETE FROM resume",connectionFactory);
+        try {
+            PreparedStatement ps = SQLHelper.sqlexecute("DELETE FROM resume", connectionFactory);
+            ps.execute();
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
 
     }
 
@@ -86,6 +91,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
+
+      //  ResultSet rs=SQLHelper.sqlexecute("SELECT * from resume",connectionFactory);
+
         //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
         List<Resume>resumes=new ArrayList<>();
         try(Connection connection = connectionFactory.getConnection();
@@ -101,6 +109,7 @@ public class SqlStorage implements Storage {
             throw new StorageException(e);
         }
         return resumes;
+
     }
 
     @Override
