@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.ConnectionFactory;
+import ru.javawebinar.basejava.sql.SQLHelper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,12 +21,8 @@ public class SqlStorage implements Storage {
 
     @Override
     public void clear() {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("DELETE FROM resume")) {
-            ps.execute();
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
+        SQLHelper.sqlexecute("DELETE FROM resume",connectionFactory);
+
     }
 
     @Override
@@ -72,6 +69,8 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
+      //  SQLHelper.sqlexecute("DELETE FROM resume WHERE uuid=?",uuid);
+
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement("DELETE FROM resume WHERE uuid=?")) {
             ps.setString(1, uuid);
@@ -82,6 +81,7 @@ public class SqlStorage implements Storage {
         } catch (SQLException e) {
             throw new StorageException(uuid);
         }
+
     }
 
     @Override
