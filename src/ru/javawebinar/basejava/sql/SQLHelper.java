@@ -32,10 +32,10 @@ public class SQLHelper {
     }
 
 
-    public static PreparedStatement sqlexecute(String sql, ConnectionFactory connectionFactory) {
+    public static void sqlexecute(String sql, ConnectionFactory connectionFactory) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            return ps;
+            ps.execute();
         } catch (SQLException e) {
             throw new StorageException(e);
         }

@@ -20,14 +20,8 @@ public class SqlStorage implements Storage {
     }
 
     @Override
-    public void clear() {
-        try {
-            PreparedStatement ps = SQLHelper.sqlexecute("DELETE FROM resume", connectionFactory);
-            ps.execute();
-        } catch (Exception e) {
-            throw new StorageException(e);
-        }
-
+    public void clear()  {
+        SQLHelper.sqlexecute("DELETE FROM resume", connectionFactory);
     }
 
     @Override
