@@ -1,4 +1,9 @@
 package ru.javawebinar.basejava.sql;
 
-public interface SQLExecute {
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public interface SQLExecute<T> {
+    T SQLExecute(PreparedStatement ps) throws SQLException;
+
 }
