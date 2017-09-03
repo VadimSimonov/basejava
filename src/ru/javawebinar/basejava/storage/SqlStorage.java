@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import org.postgresql.core.ConnectionFactory;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
@@ -9,14 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage {
-//    private final ConnectionFactory connectionFactory;
+
     private int colSize=0;
     private ResultSet rs;
     Resume r;
+    public final SQLHelper sqlHelper;
 
-    SqlStorage(SQLHelper sqlHelper) {
+    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        this.sqlHelper = new SQLHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
-
 
     @Override
     public void clear()  {
