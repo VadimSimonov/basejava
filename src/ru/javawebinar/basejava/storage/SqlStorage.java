@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.storage;
 import org.postgresql.core.ConnectionFactory;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SQLExecute;
 import ru.javawebinar.basejava.sql.SQLHelper;
@@ -68,7 +69,7 @@ public class SqlStorage implements Storage {
                    if (e.getSQLState().equals("23505"))
                {
                    throw new ExistStorageException(r.getUuid());
-               }else throw new SQLException(e);
+               }else throw new StorageException(e);
                }
         return null;
         });
