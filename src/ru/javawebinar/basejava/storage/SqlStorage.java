@@ -2,32 +2,26 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.sql.ConnectionFactory;
-import ru.javawebinar.basejava.sql.SQLExecute;
 import ru.javawebinar.basejava.sql.SQLHelper;
-
-import java.lang.reflect.Executable;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SqlStorage implements Storage {
-    private final ConnectionFactory connectionFactory;
+//    private final ConnectionFactory connectionFactory;
     private int colSize=0;
     private ResultSet rs;
     Resume r;
 
-    public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+    SqlStorage(SQLHelper sqlHelper) {
     }
+
 
     @Override
     public void clear()  {
         String sql="DELETE FROM resume";
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
             ps.execute();
             return null;
         });
@@ -37,7 +31,7 @@ public class SqlStorage implements Storage {
     public Resume get(String uuid) {
 
         String sql="SELECT * FROM resume r WHERE r.uuid =?";
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
             ps.setString(1, uuid);
             rs = ps.executeQuery();
             if (!rs.next()) {
@@ -53,7 +47,7 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         String sql="UPDATE resume SET full_name=? WHERE uuid=?";
-        SQLHelper.transactionExecute(sql,connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
                 ps.setString(2, r.getUuid());
                 ps.setString(1, r.getFullName());
                 int a=ps.executeUpdate();
@@ -68,8 +62,7 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         String sql="INSERT INTO resume (uuid, full_name) VALUES (?,?)";
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
-            try {
+        SQLHelper.transactionExecute(sql, ps -> {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
                try {
@@ -78,9 +71,6 @@ public class SqlStorage implements Storage {
                {
                    throw new ExistStorageException(r.getUuid());
                }
-            } catch (SQLException e) {
-            throw new StorageException(r.getFullName());
-        }
         return null;
         });
     }
@@ -88,7 +78,7 @@ public class SqlStorage implements Storage {
     @Override
     public void delete(String uuid) {
         String sql = "DELETE FROM resume WHERE uuid=?";
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
             ps.setString(1, uuid);
             int eu = ps.executeUpdate();
             if (eu == 0) {
@@ -103,7 +93,7 @@ public class SqlStorage implements Storage {
         //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
         String sql = "SELECT * from resume ORDER BY full_name";
         List<Resume>resumes=new ArrayList<>();
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
             {
@@ -118,7 +108,7 @@ public class SqlStorage implements Storage {
     @Override
     public int size() {
         String sql="SELECT count(*) FROM resume";
-        SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
+        SQLHelper.transactionExecute(sql, ps -> {
             ResultSet rs=ps.executeQuery();
             while (rs.next())
             {
