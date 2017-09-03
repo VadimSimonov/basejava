@@ -8,6 +8,7 @@ import ru.javawebinar.basejava.sql.ConnectionFactory;
 import ru.javawebinar.basejava.sql.SQLExecute;
 import ru.javawebinar.basejava.sql.SQLHelper;
 
+import java.lang.reflect.Executable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,10 +54,13 @@ public class SqlStorage implements Storage {
     public void update(Resume r) {
         String sql="UPDATE resume SET full_name=? WHERE uuid=?";
         SQLHelper.transactionExecute(sql,connectionFactory, ps -> {
-            ps.setString(2, r.getUuid());
-            ps.setString(1, r.getFullName());
-            ps.execute();
-            return null;
+                ps.setString(2, r.getUuid());
+                ps.setString(1, r.getFullName());
+                int a=ps.executeUpdate();
+                if (a==0) {
+                    throw new NotExistStorageException(r.getUuid());
+                }
+                return null;
         });
         }
 
@@ -68,11 +72,16 @@ public class SqlStorage implements Storage {
             try {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
-                ps.execute();
-                return null;
+               try {
+                   ps.execute();
+               }catch (SQLException e)
+               {
+                   throw new ExistStorageException(r.getUuid());
+               }
             } catch (SQLException e) {
-            throw new ExistStorageException(r.getFullName());
+            throw new StorageException(r.getFullName());
         }
+        return null;
         });
     }
 
@@ -92,7 +101,7 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
-        String sql = "SELECT * from resume";
+        String sql = "SELECT * from resume ORDER BY full_name";
         List<Resume>resumes=new ArrayList<>();
         SQLHelper.transactionExecute(sql, connectionFactory, ps -> {
             ResultSet rs = ps.executeQuery();
@@ -101,7 +110,6 @@ public class SqlStorage implements Storage {
                 Resume resume=new Resume(rs.getString("uuid"),rs.getString("full_name"));
                 resumes.add(resume);
             }
-            Collections.sort(resumes);
             return resumes;
         });
         return resumes;
