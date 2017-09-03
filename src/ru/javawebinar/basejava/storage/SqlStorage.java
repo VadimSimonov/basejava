@@ -4,6 +4,7 @@ import org.postgresql.core.ConnectionFactory;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.sql.SQLExecute;
 import ru.javawebinar.basejava.sql.SQLHelper;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,9 +12,6 @@ import java.util.List;
 
 public class SqlStorage implements Storage {
 
-    private int colSize=0;
-    private ResultSet rs;
-    Resume r;
     public final SQLHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
@@ -23,7 +21,7 @@ public class SqlStorage implements Storage {
     @Override
     public void clear()  {
         String sql="DELETE FROM resume";
-        SQLHelper.transactionExecute(sql, ps -> {
+        SQLHelper.transactionExecute(sql, (PreparedStatement ps) -> {
             ps.execute();
             return null;
         });
@@ -31,19 +29,15 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-
         String sql="SELECT * FROM resume r WHERE r.uuid =?";
-        SQLHelper.transactionExecute(sql, ps -> {
+       return SQLHelper.transactionExecute(sql, ps -> {
             ps.setString(1, uuid);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 throw new NotExistStorageException(uuid);
             }
-            r=new Resume(uuid, rs.getString("full_name"));
-            return r;
-
+            return new Resume(uuid, rs.getString("full_name"));
         });
-        return r;
     }
 
     @Override
@@ -71,7 +65,10 @@ public class SqlStorage implements Storage {
                    ps.execute();
                }catch (SQLException e)
                {
+                   if (e.getSQLState().equals("23505"))
+               {
                    throw new ExistStorageException(r.getUuid());
+               }
                }
         return null;
         });
@@ -95,7 +92,7 @@ public class SqlStorage implements Storage {
         //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
         String sql = "SELECT * from resume ORDER BY full_name";
         List<Resume>resumes=new ArrayList<>();
-        SQLHelper.transactionExecute(sql, ps -> {
+        return SQLHelper.transactionExecute(sql, ps -> {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
             {
@@ -104,20 +101,18 @@ public class SqlStorage implements Storage {
             }
             return resumes;
         });
-        return resumes;
     }
 
     @Override
     public int size() {
         String sql="SELECT count(*) FROM resume";
-        SQLHelper.transactionExecute(sql, ps -> {
+        return SQLHelper.transactionExecute(sql, (PreparedStatement ps) -> {
             ResultSet rs=ps.executeQuery();
             while (rs.next())
             {
-                colSize=rs.getInt(1);
+                return rs.getInt(1);
             }
-            return colSize;
+            return 0;
         });
-        return colSize;
     }
 }
