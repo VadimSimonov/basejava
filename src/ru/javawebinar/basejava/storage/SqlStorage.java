@@ -21,7 +21,7 @@ public class SqlStorage implements Storage {
     @Override
     public void clear()  {
         String sql="DELETE FROM resume";
-        SQLHelper.transactionExecute(sql, (PreparedStatement ps) -> {
+        sqlHelper.transactionExecute(sql, (PreparedStatement ps) -> {
             ps.execute();
             return null;
         });
@@ -30,7 +30,7 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         String sql="SELECT * FROM resume r WHERE r.uuid =?";
-       return SQLHelper.transactionExecute(sql, ps -> {
+       return sqlHelper.transactionExecute(sql, ps -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -43,7 +43,7 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         String sql="UPDATE resume SET full_name=? WHERE uuid=?";
-        SQLHelper.transactionExecute(sql, ps -> {
+        sqlHelper.transactionExecute(sql, ps -> {
                 ps.setString(2, r.getUuid());
                 ps.setString(1, r.getFullName());
                 int a=ps.executeUpdate();
@@ -58,7 +58,7 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         String sql="INSERT INTO resume (uuid, full_name) VALUES (?,?)";
-        SQLHelper.transactionExecute(sql, ps -> {
+        sqlHelper.transactionExecute(sql, ps -> {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
                try {
@@ -68,7 +68,7 @@ public class SqlStorage implements Storage {
                    if (e.getSQLState().equals("23505"))
                {
                    throw new ExistStorageException(r.getUuid());
-               }
+               }else throw new SQLException(e);
                }
         return null;
         });
@@ -77,7 +77,7 @@ public class SqlStorage implements Storage {
     @Override
     public void delete(String uuid) {
         String sql = "DELETE FROM resume WHERE uuid=?";
-        SQLHelper.transactionExecute(sql, ps -> {
+        sqlHelper.transactionExecute(sql, ps -> {
             ps.setString(1, uuid);
             int eu = ps.executeUpdate();
             if (eu == 0) {
@@ -92,7 +92,7 @@ public class SqlStorage implements Storage {
         //copy pasta https://alvinalexander.com/blog/post/jdbc/jdbc-preparedstatement-select-like
         String sql = "SELECT * from resume ORDER BY full_name";
         List<Resume>resumes=new ArrayList<>();
-        return SQLHelper.transactionExecute(sql, ps -> {
+        return sqlHelper.transactionExecute(sql, ps -> {
             ResultSet rs = ps.executeQuery();
             while (rs.next())
             {
@@ -106,9 +106,9 @@ public class SqlStorage implements Storage {
     @Override
     public int size() {
         String sql="SELECT count(*) FROM resume";
-        return SQLHelper.transactionExecute(sql, (PreparedStatement ps) -> {
+        return sqlHelper.transactionExecute(sql, (PreparedStatement ps) -> {
             ResultSet rs=ps.executeQuery();
-            while (rs.next())
+            if (rs.next())
             {
                 return rs.getInt(1);
             }
