@@ -62,15 +62,7 @@ public class SqlStorage implements Storage {
         sqlHelper.transactionExecute(sql, ps -> {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
-               try {
                    ps.execute();
-               }catch (SQLException e)
-               {
-                   if (e.getSQLState().equals("23505"))
-               {
-                   throw new ExistStorageException(r.getUuid());
-               }else throw new StorageException(e);
-               }
         return null;
         });
     }
