@@ -95,6 +95,7 @@ public abstract class AbstractStorageTest {
     public void update() throws Exception {
         Resume newResume = new Resume(UUID_1, "New Name");
         newResume.addContact(ContactType.PHONE,"newPhone");
+        newResume.addContact(ContactType.MAIL,"google");
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
     }
@@ -110,7 +111,7 @@ public abstract class AbstractStorageTest {
         assertEquals(3, list.size());
         List<Resume> sortedResumes = Arrays.asList(R1, R2, R3);
         Collections.sort(sortedResumes);
-        assertEquals(list, sortedResumes);
+        assertEquals(list,sortedResumes);
     }
 
     @Test
