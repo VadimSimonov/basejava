@@ -51,8 +51,8 @@ public class SqlStorage implements Storage {
                             throw new NotExistStorageException(r.getUuid());
                         }
                     }
-            deleteSections(conn,r);
-            insertSections(conn,r);
+            deleteContact(conn,r);
+            insertContact(conn,r);
             return null;
                 }
         );
@@ -65,7 +65,7 @@ public class SqlStorage implements Storage {
                 saveUpdateRefact(ps,r);
                 ps.execute();
             }
-            insertSections(conn,r);
+            insertContact(conn,r);
             return null;
                 }
         );
@@ -91,10 +91,11 @@ public class SqlStorage implements Storage {
             while (rs.next()) {
                 String uiid = rs.getString("uuid");
                 Resume resume = map.get(uiid);
-                if (resume == null)
+                if (resume == null) {
                     r = new Resume(uiid, rs.getString("full_name"));
-                    addContact(rs,r);
                     map.put(uiid, r);
+                }
+                addContact(rs,r);
             }
             return new ArrayList<>(map.values());
         });
@@ -121,7 +122,7 @@ public class SqlStorage implements Storage {
         ps.setString(1, r.getFullName());
     }
 
-    private void insertSections(Connection conn, Resume r) throws SQLException {
+    private void insertContact(Connection conn, Resume r) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (value, resume_uuid, type) VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                 ps.setString(1, e.getValue());
@@ -133,12 +134,9 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteSections(Connection conn, Resume r) throws SQLException {
+    private void deleteContact(Connection conn, Resume r) throws SQLException {
         sqlHelper.execute("DELETE FROM contact WHERE resume_uuid=?", ps -> {
             ps.setString(1, r.getUuid());
-            if (ps.executeUpdate() == 0) {
-                throw new NotExistStorageException(r.getUuid());
-            }
             return null;
         });
     }
