@@ -75,9 +75,10 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() throws Exception {
         storage.clear();
+        storage.save(R3);
         storage.save(R1);
         storage.save(R2);
-        storage.save(R3);
+
     }
 
     @Test

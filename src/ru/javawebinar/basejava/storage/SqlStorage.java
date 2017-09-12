@@ -6,16 +6,14 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // TODO implement Section (except OrganizationSection)
 // TODO Join and split ListSection by `\n`
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
-
+    Resume rsm;
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
@@ -89,6 +87,42 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
+    Map<String, Resume> map = new LinkedHashMap<>();
+    return sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * from resume")) {
+                ResultSet rs =ps.executeQuery();
+                while (rs.next()) {
+                    String uuid = rs.getString("uuid");
+                    Resume resume = map.get(uuid);
+                    if (resume == null) {
+                        resume = new Resume(uuid, rs.getString("full_name"));
+                        map.put(uuid, resume);
+                    }
+                    rsm=resume;
+                }
+            }
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * from contact")) {
+               ResultSet rs=ps.executeQuery();
+               while (rs.next())
+               {
+                   String uuid=rs.getString("resume_uuid");
+                   rsm = map.get(uuid);
+                   if (rsm != null) {
+                       addContact(rs,rsm);
+                   }
+               }
+                ps.addBatch();
+                ps.executeBatch();
+            }
+      //  LinkedHashMap result = MapSort(map);
+        List<Resume>resumes= new ArrayList<> (map.values());
+        Collections.sort(resumes);
+            //return new ArrayList<>(map.values());
+        return resumes;
+        });
+
+
+/*
         return sqlHelper.execute("" +
                 "   SELECT * FROM resume r\n" +
                 "LEFT JOIN contact c ON r.uuid = c.resume_uuid\n" +
@@ -106,6 +140,14 @@ public class SqlStorage implements Storage {
             }
             return new ArrayList<>(map.values());
         });
+        */
+    }
+
+    private LinkedHashMap MapSort(Map<String, Resume> map) {
+        return map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
     @Override
