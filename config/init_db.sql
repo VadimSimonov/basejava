@@ -11,3 +11,20 @@ CREATE TABLE contact (
 );
 CREATE UNIQUE INDEX contact_uuid_type_index
   ON contact (resume_uuid, type);
+
+CREATE TABLE section
+(
+  id          SERIAL   NOT NULL
+    CONSTRAINT section_pkey
+    PRIMARY KEY,
+  sectiontype        TEXT     NOT NULL,
+  name       TEXT     NOT NULL,
+  resume_uuid CHAR(36) NOT NULL
+    CONSTRAINT section_resume_uuid_fk
+    REFERENCES resume
+    ON UPDATE RESTRICT ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX section_uuid_type_index
+  ON section (resume_uuid, sectiontype );
+CREATE INDEX fki_section_resume_uuid_fk
+  ON section (resume_uuid);
