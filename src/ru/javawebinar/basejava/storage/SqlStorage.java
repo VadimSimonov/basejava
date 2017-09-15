@@ -6,14 +6,12 @@ import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 // TODO implement Section (except OrganizationSection)
 // TODO Join and split ListSection by `\n`
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
-    Resume rsm;
-    Resume rr;
+    private Resume rsm;
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
@@ -26,16 +24,10 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
-  /*                      "    SELECT * FROM resume r " +
-                        " LEFT JOIN contact c " +
-                        "        ON r.uuid = c.resume_uuid " +
-                        "     WHERE r.uuid =? ",
-*/
                         "SELECT * FROM resume r " +
                         " LEFT JOIN contact c ON r.uuid = c.resume_uuid "+
                         " LEFT JOIN section s ON r.uuid = s.resume_uuid "+
                         " WHERE r.uuid =? ",
-
             ps -> {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
@@ -96,42 +88,40 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        /*
-    Map<String, Resume> map = new LinkedHashMap<>();
-    return sqlHelper.transactionalExecute(conn -> {
-            try (PreparedStatement ps = conn.prepareStatement("SELECT * from resume")) {
-                ResultSet rs =ps.executeQuery();
+        Map<String, Resume> map = new LinkedHashMap<>();
+        return sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume")) {
+
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     String uuid = rs.getString("uuid");
-                    Resume resume = map.get(uuid);
-                    if (resume == null) {
-                        resume = new Resume(uuid, rs.getString("full_name"));
-                        map.put(uuid, resume);
+                    rsm = map.get(uuid);
+                    if (rsm == null) {
+                        rsm = new Resume(uuid, rs.getString("full_name"));
+                        map.put(uuid, rsm);
                     }
-                    rsm=resume;
                 }
             }
-            try (PreparedStatement ps = conn.prepareStatement("SELECT * from contact")) {
-               ResultSet rs=ps.executeQuery();
-               while (rs.next())
-               {
-                   String uuid=rs.getString("resume_uuid");
-                   rsm = map.get(uuid);
-                   if (rsm != null) {
-                       addContact(rs,rsm);
-                   }
-               }
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact")) {
+                String tableName="contact";
+                mapPut(ps, map, tableName);
+
+            }
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section")) {
+                String tableName="section";
+                mapPut(ps, map, tableName);
                 ps.addBatch();
                 ps.executeBatch();
             }
-      //  LinkedHashMap result = MapSort(map);
-        List<Resume>resumes= new ArrayList<> (map.values());
-        Collections.sort(resumes);
+            //  LinkedHashMap result = MapSort(map);
+            List<Resume> resumes = new ArrayList<>(map.values());
+            Collections.sort(resumes);
             //return new ArrayList<>(map.values());
-        return resumes;
+            return resumes;
         });
-        */
+    }
 
+        /*
         return sqlHelper.execute("" +
                 "   SELECT * FROM resume r\n" +
                 "LEFT JOIN contact c ON r.uuid = c.resume_uuid\n" +
@@ -151,16 +141,16 @@ public class SqlStorage implements Storage {
             }
             return new ArrayList<>(map.values());
         });
+        */
 
-    }
-
+/*
     private LinkedHashMap MapSort(Map<String, Resume> map) {
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
-
+*/
     @Override
     public int size() {
         return sqlHelper.execute("SELECT count(*) FROM resume", st -> {
@@ -209,6 +199,27 @@ public class SqlStorage implements Storage {
         }
     }
 
+    private void addSection(ResultSet rs, Resume r) throws SQLException {
+        String section = rs.getString("name");
+        String type=rs.getString("sectiontype");
+        if (type!=null && section!=null) {
+            switch (SectionType.valueOf(type)){
+                case PERSONAL:
+                case OBJECTIVE:
+                    r.addSection(SectionType.valueOf(type), new TextSection(section));
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    String[] m = section.split("\n");
+                    r.addSection(SectionType.valueOf(type), new ListSection(m));
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
+                    break;
+            }
+        }
+    }
+
     private void deleteContacts(Connection conn, Resume r) {
         sqlHelper.execute("DELETE  FROM contact WHERE resume_uuid=?", ps -> {
             ps.setString(1, r.getUuid());
@@ -230,24 +241,18 @@ public class SqlStorage implements Storage {
             r.addContact(ContactType.valueOf(rs.getString("type")), value);
         }
     }
-    private void addSection(ResultSet rs, Resume r) throws SQLException {
-        String section = rs.getString("name");
-        String type=rs.getString("sectiontype");
-        if (type!=null && section!=null) {
-            switch (SectionType.valueOf(type)){
-                case PERSONAL:
-                case OBJECTIVE:
-                    r.addSection(SectionType.valueOf(type), new TextSection(section));
-                    break;
-                case ACHIEVEMENT:
-                case QUALIFICATIONS:
-                    String[] m = section.split("\n");
-                    r.addSection(SectionType.valueOf(type), new ListSection(m));
-                    break;
-                case EXPERIENCE:
-                case EDUCATION:
-                    break;
+    private void mapPut(PreparedStatement ps, Map<String, Resume> map, String tableName) throws SQLException {
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            String uuid = rs.getString("resume_uuid");
+            Resume rsm = map.get(uuid);
+            if (rsm != null && tableName.equals("contact")) {
+                addContact(rs, rsm);
+            }else
+            if (rsm != null && tableName.equals("section")) {
+                addSection(rs, rsm);
             }
         }
     }
+
 }
