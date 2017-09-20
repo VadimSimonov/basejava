@@ -26,6 +26,10 @@ public class ResumeServlet extends HttpServlet {
         List<Resume> list=storage.getAllSorted();
 
         response.getWriter().write("<table border=\"1\">");
+        response.getWriter().write("<tr>");
+        response.getWriter().write("<th>"+"UUID"+"</th>");
+        response.getWriter().write("<th>"+"Full name"+"</th>");
+        response.getWriter().write("</tr>");
         for (Resume a:list
              ) {
             response.getWriter().write("<tr>");
