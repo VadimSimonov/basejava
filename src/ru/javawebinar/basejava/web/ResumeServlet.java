@@ -24,12 +24,17 @@ public class ResumeServlet extends HttpServlet {
 
         Storage storage  = Config.get().getStorage();
         List<Resume> list=storage.getAllSorted();
-        //List<Resume> list=Config.get().getStorage().getAllSorted();
 
+        response.getWriter().write("<table border=\"1\">");
         for (Resume a:list
              ) {
-            response.getWriter().write(String.valueOf(a));
+            response.getWriter().write("<tr>");
+            response.getWriter().write("<td>"+a.getUuid()+"</td>");
+            response.getWriter().write("<td>"+a.getFullName()+"</td>");
+            response.getWriter().write("</tr>");
         }
+
+        response.getWriter().write("</table>");
 
         }
 
