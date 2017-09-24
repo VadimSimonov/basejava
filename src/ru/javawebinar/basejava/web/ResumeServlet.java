@@ -29,12 +29,14 @@ public class ResumeServlet extends HttpServlet {
         response.getWriter().write("<tr>");
         response.getWriter().write("<th>"+"UUID"+"</th>");
         response.getWriter().write("<th>"+"Full name"+"</th>");
+        response.getWriter().write("<th>"+"Sections"+"</th>");
         response.getWriter().write("</tr>");
         for (Resume a:list
              ) {
             response.getWriter().write("<tr>");
             response.getWriter().write("<td>"+a.getUuid()+"</td>");
             response.getWriter().write("<td>"+a.getFullName()+"</td>");
+            response.getWriter().write("<td>"+a.getSections().values()+"</td>");
             response.getWriter().write("</tr>");
         }
 
