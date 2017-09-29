@@ -44,6 +44,8 @@
                     <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations">
                     <a href="${organizations.homePage.url}">${organizations.homePage.name}</a><br/>
                         <c:forEach items="${organizations.positions}" var="positions">
+                            <b>Должность:</b>
+                            ${positions.title}<br/>
                             ${positions.startDate}
                             <c:set var="date" value="<%=DateUtil.NOW%>"></c:set>
                             <c:if test="${date.equals(positions.endDate)}">
@@ -52,8 +54,8 @@
                             <c:if test="${!date.equals(positions.endDate)}">
                                 <c:out value="${positions.endDate}"></c:out>
                             </c:if>
-
-                            <b>${positions.title}<br/></b>
+                            <br/>
+                            <b>Описание:</b><br/>
                             ${positions.description}<br/>
                         </c:forEach>
                     </c:forEach>
