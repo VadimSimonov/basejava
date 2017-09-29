@@ -37,6 +37,7 @@ public class ResumeServlet extends HttpServlet {
         }
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
+            String[] values = request.getParameterValues(type.name());
             if (value != null && value.trim().length() != 0) {
             switch (type)
                     {
@@ -46,10 +47,12 @@ public class ResumeServlet extends HttpServlet {
                             break;
                         case ACHIEVEMENT:
                         case QUALIFICATIONS:
-                            r.addSection(type, new ListSection(value));
+                            r.addSection(type, new ListSection(value.split("\n")));
+                            break;
                         case EXPERIENCE:
                         case EDUCATION:
                             r.addSection(type, new OrganizationSection(new Organization()));
+                            break;
 
                     }
             } else {
