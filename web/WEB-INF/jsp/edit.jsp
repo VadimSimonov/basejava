@@ -2,6 +2,7 @@
 <%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,25 +44,29 @@
                 </c:when>
                 <c:when test="${type.name()=='EXPERIENCE' || type.name()=='EDUCATION' }">
                     <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations">
-                        <h4>URL:</h4>
-                            <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
                         <h4>Название:</h4>
                             <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
+                        <h4>URL:</h4>
+                        <dd><input name="${type}_url" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
                         <c:forEach items="${organizations.positions}" var="positions">
                             <br/><br/><b>Должность:</b>
-                            <b>${positions.title}<br/></b>
-                            <b>Дата начала:</b>
-                                <dd><input type="date" size="30" value="${positions.startDate}"></dd><br/>
+                            <dd><input name="${type}_title" type="text" size="70" value="${positions.title}"><br/></dd>
+                            <br/><b>Дата начала:</b>
+                            <fmt:parseDate value="${positions.startDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
+                            <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
+                                <dd><input name="${type}_startDate" type="date" size="30" value="${stdDatum}"></dd><br/>
                             <b>Дата окончания:</b>
                             <c:set var="date" value="<%=DateUtil.NOW%>"></c:set>
                             <c:if test="${date.equals(positions.endDate)}">
-                                <dd><input type="date" size="30" value=""></dd>
+                                <dd><input name="${type}_endDate" type="date" size="30" value=""></dd>
                             </c:if>
                             <c:if test="${!date.equals(positions.endDate)}">
-                                <dd><input type="date" size="30" value="${positions.endDate}"></dd>
+                                <fmt:parseDate value="${positions.endDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
+                                <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
+                                <dd><input name="${type}_endDate" type="date" size="30" value="${stdDatum}"></dd>
                             </c:if>
                             <br/><b>Описание:</b><br/>
-                            <textarea name="${type}" cols="70">${positions.description}</textarea>
+                            <textarea name="${type}_description" cols="70">${positions.description}</textarea>
                         </c:forEach>
                     </c:forEach>
                 </c:when>

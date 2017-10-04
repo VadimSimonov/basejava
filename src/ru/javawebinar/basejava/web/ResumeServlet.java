@@ -3,13 +3,17 @@ package ru.javawebinar.basejava.web;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
-
+import ru.javawebinar.basejava.util.DateUtil;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -51,9 +55,35 @@ public class ResumeServlet extends HttpServlet {
                             break;
                         case EXPERIENCE:
                         case EDUCATION:
-                            r.addSection(type, new OrganizationSection(new Organization()));
-                            break;
+                            for (String org:values
+                                 ) {
+                                String url= request.getParameter(type.name()+"_url");
+                                String title= request.getParameter(type.name()+"_title");
+                                String startDate= request.getParameter(type.name()+"_startDate");
+                                String endDate= request.getParameter(type.name()+"_endDate");
+                                String description= request.getParameter(type.name()+"_description");
+  /*
+                                DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyy-mm");
+                                LocalDate ld = LocalDate.parse("2017-01", DATEFORMATTER);
+                                LocalDateTime ldt = LocalDateTime.of(ld, LocalDateTime.now().toLocalTime());
+*/
+                                DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                                        .appendPattern("yyyy/MM")
+                                        .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+                                        .toFormatter();
+                                LocalDate startd = LocalDate.parse(startDate, formatter);
 
+                                LocalDate endd;
+                                if (endDate.equals(""))
+                                {
+                                    endd= DateUtil.NOW;
+                                }else
+                                 endd= LocalDate.parse(endDate, formatter);
+                                r.addSection(type, new OrganizationSection(
+                                        new Organization(org, url,
+                                                new Organization.Position(startd,endd, title, description))));
+                            }
+                            break;
                     }
             } else {
                 r.getSections().remove(type);
