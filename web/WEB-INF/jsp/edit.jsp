@@ -43,6 +43,14 @@
                     <textarea name="${type}" cols="70"><%=String.join("\n",((ListSection) section).getItems())%></textarea>
                 </c:when>
                 <c:when test="${type.name()=='EXPERIENCE' || type.name()=='EDUCATION' }">
+                    <c:choose>
+                        <c:when test="${type.name()=='EXPERIENCE'}">
+                            <a href="resume?uuid=${resume.uuid}&action=add&form=EXPERIENCE"><img src="img/pencil.png"></a>
+                        </c:when>
+                        <c:when test="${type.name()=='EDUCATION'}">
+                            <a href="resume?uuid=${resume.uuid}&action=add&form=EDUCATION"><img src="img/pencil.png"></a>
+                        </c:when>
+                    </c:choose>
                     <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations">
                         <h4>Название:</h4>
                             <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
@@ -54,25 +62,24 @@
                             <br/><b>Дата начала:</b>
                             <fmt:parseDate value="${positions.startDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                             <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
-                                <dd><input name="${type}_startDate" type="date" size="30" value="${stdDatum}"></dd><br/>
+                                <dd><input name="${type}_startDate" type="date" size="30" value="${positions.endDate}"></dd><br/>
                             <b>Дата окончания:</b>
-                            <c:set var="date" value="<%=DateUtil.NOW%>"></c:set>
+                            <c:set var="date" value="<%=DateUtil.NOW%>">
+                            </c:set>
                             <c:if test="${date.equals(positions.endDate)}">
                                 <dd><input name="${type}_endDate" type="date" size="30" value=""></dd>
                             </c:if>
                             <c:if test="${!date.equals(positions.endDate)}">
                                 <fmt:parseDate value="${positions.endDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                                 <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
-                                <dd><input name="${type}_endDate" type="date" size="30" value="${stdDatum}"></dd>
+                                <dd><input name="${type}_endDate" type="date" size="30" value="${positions.endDate}"></dd>
                             </c:if>
                             <br/><b>Описание:</b><br/>
                             <textarea name="${type}_description" cols="70">${positions.description}</textarea>
                         </c:forEach>
                     </c:forEach>
                 </c:when>
-
                 </c:choose>
-
             </dl>
         </c:forEach>
         <hr>

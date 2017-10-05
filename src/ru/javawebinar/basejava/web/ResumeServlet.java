@@ -62,23 +62,21 @@ public class ResumeServlet extends HttpServlet {
                                 String startDate= request.getParameter(type.name()+"_startDate");
                                 String endDate= request.getParameter(type.name()+"_endDate");
                                 String description= request.getParameter(type.name()+"_description");
-  /*
-                                DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyy-mm");
-                                LocalDate ld = LocalDate.parse("2017-01", DATEFORMATTER);
-                                LocalDateTime ldt = LocalDateTime.of(ld, LocalDateTime.now().toLocalTime());
-*/
+
+                                /*
                                 DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                                         .appendPattern("yyyy/MM")
                                         .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
                                         .toFormatter();
                                 LocalDate startd = LocalDate.parse(startDate, formatter);
-
+*/
+                                LocalDate startd = LocalDate.parse(startDate);
                                 LocalDate endd;
                                 if (endDate.equals(""))
                                 {
                                     endd= DateUtil.NOW;
                                 }else
-                                 endd= LocalDate.parse(endDate, formatter);
+                                 endd= LocalDate.parse(endDate);
                                 r.addSection(type, new OrganizationSection(
                                         new Organization(org, url,
                                                 new Organization.Position(startd,endd, title, description))));
@@ -110,14 +108,28 @@ public class ResumeServlet extends HttpServlet {
                 return;
             case "view":
             case "edit":
+            case "add":
                 r = storage.get(uuid);
                 break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
+        switch (action) {
+            case "view":
+                request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
+                break;
+            case "edit":
+                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+                break;
+            case "add":
+                request.getRequestDispatcher("/WEB-INF/jsp/add.jsp").forward(request, response);
+                break;
+        }
+    /*
         request.getRequestDispatcher(
                 ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
         ).forward(request, response);
+        */
     }
 }
