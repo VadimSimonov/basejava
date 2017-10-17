@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -43,25 +45,24 @@ public class ResumeServlet extends HttpServlet {
             String value = request.getParameter(type.name());
             String[] values = request.getParameterValues(type.name());
             if (value != null && value.trim().length() != 0) {
-            switch (type)
-                    {
-                        case PERSONAL:
-                        case OBJECTIVE:
-                            r.addSection(type, new TextSection(value));
-                            break;
-                        case ACHIEVEMENT:
-                        case QUALIFICATIONS:
-                            r.addSection(type, new ListSection(value.split("\n")));
-                            break;
-                        case EXPERIENCE:
-                        case EDUCATION:
-                            for (String org:values
-                                 ) {
-                                String url= request.getParameter(type.name()+"_url");
-                                String title= request.getParameter(type.name()+"_title");
-                                String startDate= request.getParameter(type.name()+"_startDate");
-                                String endDate= request.getParameter(type.name()+"_endDate");
-                                String description= request.getParameter(type.name()+"_description");
+                switch (type) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        r.addSection(type, new TextSection(value));
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        r.addSection(type, new ListSection(value.split("\n")));
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        for (String org : values
+                                ) {
+                            String url = request.getParameter(type.name() + "_url");
+                            String title = request.getParameter(type.name() + "_title");
+                            String startDate = request.getParameter(type.name() + "_startDate");
+                            String endDate = request.getParameter(type.name() + "_endDate");
+                            String description = request.getParameter(type.name() + "_description");
 
                                 /*
                                 DateTimeFormatter formatter = new DateTimeFormatterBuilder()
@@ -70,27 +71,60 @@ public class ResumeServlet extends HttpServlet {
                                         .toFormatter();
                                 LocalDate startd = LocalDate.parse(startDate, formatter);
 */
-                                LocalDate startd = LocalDate.parse(startDate);
-                                LocalDate endd;
-                                if (endDate.equals(""))
-                                {
-                                    endd= DateUtil.NOW;
-                                }else
-                                 endd= LocalDate.parse(endDate);
-                                r.addSection(type, new OrganizationSection(
-                                        new Organization(org, url,
-                                                new Organization.Position(startd,endd, title, description))));
-                            }
-                            break;
-                    }
+                            LocalDate startd = LocalDate.parse(startDate);
+                            LocalDate endd;
+                            if (endDate.equals("")) {
+                                endd = DateUtil.NOW;
+                            } else
+                                endd = LocalDate.parse(endDate);
+                            r.addSection(type, new OrganizationSection(
+                                    new Organization(org, url,
+                                            new Organization.Position(startd, endd, title, description))));
+                        }
+                        break;
+                }
             } else {
                 r.getSections().remove(type);
+            }
+        }
+        for (SectionType type1 : SectionType.values()) {
+            String value1 = request.getParameter(type1.name());
+            String[] values1 = request.getParameterValues(type1.name());
+            if (value1 != null && value1.trim().length() != 0) {
+                if (type1.getTitle().equals("EXPERIENCE")||type1.getTitle().equals("EDUCATION"))
+                {
+
+                        for (String org : values1
+                                ) {
+                            String url = request.getParameter(type1.name() + "_urlNew");
+                            String title = request.getParameter(type1.name() + "_titleNew");
+                            String startDate = request.getParameter(type1.name() + "_startDateNew");
+                            String endDate = request.getParameter(type1.name() + "_endDateNew");
+                            String description = request.getParameter(type1.name() + "_descriptionNew");
+
+                            LocalDate startd = LocalDate.parse(startDate);
+                            LocalDate endd;
+                            if (endDate.equals("")) {
+                                endd = DateUtil.NOW;
+                            } else
+                                endd = LocalDate.parse(endDate);
+                            r.addSection(type1, new OrganizationSection(
+                                    new Organization(org, url,
+                                            new Organization.Position(startd, endd, title, description))));
+                        }
+                        break;
+                }
+
+
+            } else {
+                r.getSections().remove(type1);
             }
         }
 
         storage.update(r);
         response.sendRedirect("resume");
     }
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         String uuid = request.getParameter("uuid");
