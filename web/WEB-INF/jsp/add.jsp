@@ -43,18 +43,18 @@
                 <c:when test="${type.name()=='EXPERIENCE' || type.name()=='EDUCATION' }">
                     <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations">
                         <input type="hidden" name="${type}" value="${organizations.homePage.name}">
-                        <input type="hidden" name="${type}_urlNew" value="${organizations.homePage.url}">
+                        <input type="hidden" name="${type}_url" value="${organizations.homePage.url}">
                         <c:forEach items="${organizations.positions}" var="positions">
-                           <input type="hidden" name="${type}_titleNew" value="${positions.title}">
+                           <input type="hidden" name="${type}_title" value="${positions.title}">
                             <fmt:parseDate value="${positions.startDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                             <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
-                            <input type="hidden" name="${type}_startDateNew" value="${positions.startDate}">
+                            <input type="hidden" name="${type}_startDate" value="${positions.startDate}">
 
                                 <fmt:parseDate value="${positions.endDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                                 <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
-                                <input type="hidden" name="${type}_endDateNew" value="${positions.endDate}">
+                                <input type="hidden" name="${type}_endDate" value="${positions.endDate}">
 
-                            <input type="hidden" name="${type}_descriptionNew" value="${positions.description}">
+                            <input type="hidden" name="${type}_description" value="${positions.description}">
                         </c:forEach>
                     </c:forEach>
                 </c:when>
@@ -77,7 +77,8 @@
             </c:when>
         </c:choose>
         <b>Название:</b>
-        <dd><input name="${type}_New" type="text" size="50" value=""><br/></dd><br/>
+        <%--
+        <dd><input name="${type}" type="text" size="50" value=""><br/></dd><br/>
         <b>URL:</b>
         <dd><input name="${type}_urlNew" type="text" size="50" value=""><br/></dd>
         <br/><br/><b>Должность:</b>
@@ -89,6 +90,20 @@
         <br/><b>Описание:</b><br/>
         <textarea name="${type}_descriptionNew" cols="70"></textarea>
         </dl>
+        --%>
+        <dd><input name="${type}" type="text" size="50" value=""><br/></dd><br/>
+        <b>URL:</b>
+        <dd><input name="${type}_urlNew" type="text" size="50" value=""><br/></dd>
+        <br/><br/><b>Должность:</b>
+        <dd><input name="${type}_titleNew" type="text" size="50" value=""><br/></dd>
+        <br/><b>Дата начала:</b>
+        <dd><input name="${type}_startDateNew" type="date" size="50" value=""></dd><br/>
+        <b>Дата окончания:</b>
+        <dd><input name="${type}_endDateNew" type="date" size="50" value=""></dd>
+        <br/><b>Описание:</b><br/>
+        <textarea name="${type}_descriptionNew" cols="70"></textarea>
+
+
         <hr>
         <button type="submit">Сохранить</button>
         <button onclick="window.history.back()">Отменить</button>

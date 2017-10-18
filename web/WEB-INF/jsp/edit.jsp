@@ -62,7 +62,7 @@
                             <br/><b>Дата начала:</b>
                             <fmt:parseDate value="${positions.startDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                             <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />
-                                <dd><input name="${type}_startDate" type="date" size="30" value="${positions.endDate}"></dd><br/>
+                                <dd><input name="${type}_startDate" type="date" size="30" value="${positions.startDate}"></dd><br/>
                             <b>Дата окончания:</b>
                             <c:set var="date" value="<%=DateUtil.NOW%>">
                             </c:set>
