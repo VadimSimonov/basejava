@@ -91,7 +91,7 @@
         <textarea name="${type}_descriptionNew" cols="70"></textarea>
         </dl>
         --%>
-        <dd><input name="${type}" type="text" size="50" value=""><br/></dd><br/>
+        <dd><input name="${type}_name" type="text" size="50" value=""><br/></dd><br/>
         <b>URL:</b>
         <dd><input name="${type}_urlNew" type="text" size="50" value=""><br/></dd>
         <br/><br/><b>Должность:</b>
