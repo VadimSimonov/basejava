@@ -27,9 +27,6 @@ public class ResumeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         ArrayList<String> arrayListEXPERIENCE = new ArrayList<>();
         ArrayList<String> arrayListEDUCATION = new ArrayList<>();
-        ArrayList<String>listOrg=new ArrayList<>();
-        List<Organization> listNewOrgEDUCATION=new ArrayList<>();
-        List<Organization.Position> listNewPositionEDUCATION=new ArrayList<>();
 
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
@@ -65,21 +62,28 @@ public class ResumeServlet extends HttpServlet {
                         String urlNew = null;
                         String titleNew= null;
                         String descriptionNew= null;
-                        String tit=null;
+
                         String title=null;
                         String startDate=null;
+                        String endDate=null;
                         String url=null;
+                        String description=null;
 
                         for (String org : values) {
+                            List<Organization> listNewOrg=new ArrayList<>();
                             boolean flag=false;
 
                             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                                 SectionType t = e.getKey();
                                 Section section = e.getValue();
+
                                 if (t.equals(type) && t.equals(SectionType.EXPERIENCE))
                                 {
-                                        title = request.getParameter(type.name() + "_title");
-                                        startDate = request.getParameter(type.name() + "_startDate");
+                                    url= request.getParameter(type.name() + "_url");
+                                    title = request.getParameter(type.name() + "_title");
+                                    startDate = request.getParameter(type.name() + "_startDate");
+                                    endDate = request.getParameter(type.name() + "_endDate");
+                                    description = request.getParameter(type.name() + "_description");
                                         List<Organization> liste = ((OrganizationSection) section).getOrganizations();
                                         for (Organization f : liste) {
                                             List<Organization.Position> list2 = f.getPositions();
@@ -93,11 +97,20 @@ public class ResumeServlet extends HttpServlet {
                                                 }
                                             }
                                         }
-                                }else if (t.equals(type) && t.equals(SectionType.EDUCATION))
+                                ///    LocalDate startd=DateParseStart(startDate);
+                                //    LocalDate endd= DateParseEnd(endDate);
 
+                                //    listNewOrg.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
+                                //    r.addSection(type,new OrganizationSection(listNewOrg));
+                                }
+
+                                else if (t.equals(type) && t.equals(SectionType.EDUCATION))
                                 {
+                                    url= request.getParameter(type.name() + "_url");
                                     title = request.getParameter(type.name() + "_title");
                                     startDate = request.getParameter(type.name() + "_startDate");
+                                    endDate = request.getParameter(type.name() + "_endDate");
+                                    description = request.getParameter(type.name() + "_description");
                                     List<Organization> list = ((OrganizationSection) section).getOrganizations();
                                     for (Organization f : list) {
                                         List<Organization.Position> list2 = f.getPositions();
@@ -111,81 +124,82 @@ public class ResumeServlet extends HttpServlet {
                                             }
                                         }
                                     }
+                             //       LocalDate startd=DateParseStart(startDate);
+                             //       LocalDate endd= DateParseEnd(endDate);
+
+                              //      listNewOrg.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
+                             //       r.addSection(type,new OrganizationSection(listNewOrg));
                                 }
-
-                            //    listNewPositionEDUCATION.add(new Organization.Position());
-                           //     listNewOrgEDUCATION.add(new Organization(new Link(title,url),listNewPositionEDUCATION));
-
                                 }
-
                         if (flag)
                             {
                                 url= request.getParameter(type.name() + "_url");
                                 startDate = request.getParameter(type.name() + "_startDate");
-                                String endDate = request.getParameter(type.name() + "_endDate");
-                                String description = request.getParameter(type.name() + "_description");
+                                endDate = request.getParameter(type.name() + "_endDate");
+                                description = request.getParameter(type.name() + "_description");
 
                                 LocalDate startd = LocalDate.parse(startDate);
-                                LocalDate endd;
-                                if (endDate.equals("")) {
-                                    endd = DateUtil.NOW;
-                                } else
-                                    endd = LocalDate.parse(endDate);
-                                /*
-                                r.addSection(type, new OrganizationSection(
-                                        new Organization(org, url,
-                                                new Organization.Position(startd, endd, title, description))));
-                                */
-                                listNewOrgEDUCATION.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
-                              //  listNewPositionEDUCATION.add(new Organization.Position(startd,endd,title,description));
+                                LocalDate endd= DateParseEnd(endDate);
+
+                                listNewOrg.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
+                                r.addSection(type,new OrganizationSection(listNewOrg));
+
 
                             }else if (!flag)
                             {
                                 url=request.getParameter(type.name() + "_urlNew");
                                 title = request.getParameter(type.name() + "_titleNew");
                                 startDate = request.getParameter(type.name() + "_startDateNew");
-                                String endDate = request.getParameter(type.name() + "_endDateNew");
-                                String description = request.getParameter(type.name() + "_descriptionNew");
+                                endDate = request.getParameter(type.name() + "_endDateNew");
+                                description = request.getParameter(type.name() + "_descriptionNew");
 
-                                LocalDate startd = LocalDate.parse(startDate);
-                                LocalDate endd;
-                                if (endDate.equals("")) {
-                                    endd = DateUtil.NOW;
-                                } else
-                                    endd = LocalDate.parse(endDate);
+
+                                LocalDate startd=DateParseStart(startDate);
+                                LocalDate endd= DateParseEnd(endDate);
+
                                 /*
                                 r.addSection(type, new OrganizationSection(
                                         new Organization(org, url,
                                                 new Organization.Position(startd, endd, title, description))));
                                 */
-                                listNewOrgEDUCATION.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
-                                //listNewPositionEDUCATION.add(new Organization.Position(startd,endd,title,description));
+                                listNewOrg.add(new Organization(org, url,new Organization.Position(startd,endd,title,description)));
+                                r.addSection(type,new OrganizationSection(listNewOrg));
+                                //listNewPosition.add(new Organization.Position(startd,endd,title,description));
                             }
                             }
                         }
 
-
                // Organization listNewOrgEDUCATION1 = null;
               //  r.addSection(type, new OrganizationSection(listNewOrgEDUCATION1));
+                /*
+                for (int i = 0; i <listNewOrg.size() ; i++) {
+                    listNewOrg.get(i).getPositions();
+                }
+                */
 
-                for (Organization e:listNewOrgEDUCATION) {
-                    List<Organization.Position> positions = e.getPositions();
+              //  for (Organization e:listNewOrg) {
+               //     List<Organization.Position> positions = e.getPositions();
                    // OrganizationSection[] Org = positions.toArray(new OrganizationSection[positions.size()]);
                   //  for (Organization.Position p : positions) {
+                    /*
                         r.addSection(type,new OrganizationSection(
                                 new Organization(e.getHomePage().getName(),e.getHomePage().getUrl(),
                                         method(positions))));
-
+                        */
+/*
+                r.addSection(type,new OrganizationSection(
+                                     new Organization(e.getHomePage().getName(),e.getHomePage().getUrl(),
+                                             method(method2(listNewOrg)))));
+                */
+                        /*
                     ArrayList<String>arrayList=new ArrayList<>();
                     arrayList.add("1");
                     OrganizationSection[] d = arrayList.toArray(new OrganizationSection[arrayList.size()]);
-                    
-                    OrganizationSection[] Org=listNewOrgEDUCATION.toArray(new OrganizationSection[listNewOrgEDUCATION.size()]);
+                    OrganizationSection[] Org=listNewOrg.toArray(new OrganizationSection[listNewOrg.size()]);
                     r.addSection(type,new OrganizationSection(new Organization()));
+                    */
                   //  }
-
-                }
-
+             //   }
 
 
             } else {
@@ -195,6 +209,29 @@ public class ResumeServlet extends HttpServlet {
 
         storage.update(r);
         response.sendRedirect("resume");
+    }
+
+    private LocalDate DateParseStart(String startDate) {
+        return LocalDate.parse(startDate);
+    }
+
+    private LocalDate DateParseEnd(String endDate) {
+        LocalDate endd;
+        if (endDate.equals("")) {
+            return endd = DateUtil.NOW;
+        } else
+            return endd = LocalDate.parse(endDate);
+    }
+
+    private List<Organization.Position> method2(List<Organization> listNewOrgEDUCATION)
+    {
+
+        List<Organization.Position> positions = new ArrayList<>();
+        for (Organization e:listNewOrgEDUCATION) {
+            positions = e.getPositions();
+        }
+        return positions;
+
     }
 
     private Organization.Position method(List<Organization.Position> positions) {
