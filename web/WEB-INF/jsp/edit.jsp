@@ -13,7 +13,7 @@
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
-    <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
+    <form method="post" action="resume?action=edit" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Имя:</dt>
@@ -51,14 +51,23 @@
                             <a href="resume?uuid=${resume.uuid}&action=add&form=EDUCATION"><img src="img/pencil.png"></a>
                         </c:when>
                     </c:choose>
-                    <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations">
+
+                    <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations" varStatus="loop">
                         <h4>Название:</h4>
-                            <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
+                        ${organizations.setId()}
+                        <c:set var="index" value="${loop.index+100}" />
+                        <c:set var="index" value="${index + 1}"/>
+
+                        <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
                         <h4>URL:</h4>
                         <dd><input name="${type}_url" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
-                        <c:forEach items="${organizations.positions}" var="positions">
+                        <c:forEach items="${organizations.positions}" var="positions" varStatus="isindex">
+
+                            <c:set var="ind" value="${isindex.index+100}" />
+                            <c:set var="ind" value="${ind + 1}" />
+
                             <br/><br/><b>Должность:</b>
-                            <dd><input name="${type}_title" type="text" size="70" value="${positions.title}"><br/></dd>
+                            <dd><input name="${type}_title_${ind}" type="text" size="70" value="${positions.title}"><br/></dd>
                             <br/><b>Дата начала:</b>
                             <fmt:parseDate value="${positions.startDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
                             <fmt:formatDate value="${parsedDate}" var="stdDatum" type="date" pattern="yyyy/MM" />

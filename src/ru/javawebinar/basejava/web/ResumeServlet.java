@@ -28,10 +28,11 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
+        String action=request.getParameter("action");
+        System.out.println(action);
         Resume r = storage.get(uuid);
-        List<Organization> listNewOrgExp=new ArrayList<>();
-        List<Organization> listNewOrgEdu=new ArrayList<>();
         r.setFullName(fullName);
+
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -40,63 +41,161 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
-          for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
-              SectionType t = e.getKey();
-              Section section = e.getValue();
-              List<String> listAchQua=new ArrayList<>();
-              switch (t)
-              {
-                  case PERSONAL:
-                  case OBJECTIVE:
-                      String PerObj = ((TextSection) section).getContent();
-                          r.addSection(t,new TextSection(PerObj));
-                      break;
-                  case ACHIEVEMENT:
-                  case QUALIFICATIONS:
-                      List<String> li = ((ListSection) section).getItems();
-                      r.addSection(t,new ListSection(li));
-                      break;
-                  case EXPERIENCE:
-                      listNewOrgExp = ((OrganizationSection) section).getOrganizations();
-                      break;
-                  case EDUCATION:
-                     listNewOrgEdu = ((OrganizationSection) section).getOrganizations();
-                      break;
-              }
-          }
 
-        for (SectionType type : SectionType.values()) {
-            String value = request.getParameter(type.name());
-            //String[] values = request.getParameterValues(type.name());
-            if (value != null && value.trim().length() != 0) {
-                switch (type) {
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        String name=request.getParameter(type.name()+"_name");
-                        String url=request.getParameter(type.name() + "_urlNew");
-                        String title = request.getParameter(type.name() + "_titleNew");
-                        String startDate = request.getParameter(type.name() + "_startDateNew");
-                        String endDate = request.getParameter(type.name() + "_endDateNew");
-                        String description = request.getParameter(type.name() + "_descriptionNew");
-                            if (type.equals(SectionType.EXPERIENCE) && startDate!=null) {
-                                listNewOrgExp.add(addNewSection(name, url, title, startDate, endDate, description, type, request));
-                                r.addSection(type,new OrganizationSection(listNewOrgExp));
-                            }else
+        switch (action)
+        {
+            case "add":
+                List<Organization> listNewOrgExp=new ArrayList<>();
+                List<Organization> listNewOrgEdu=new ArrayList<>();
+
+
+                for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
+                    SectionType t = e.getKey();
+                    Section section = e.getValue();
+                    switch (t)
+                    {
+                        case PERSONAL:
+                        case OBJECTIVE:
+                            String PerObj = ((TextSection) section).getContent();
+                            r.addSection(t,new TextSection(PerObj));
+                            break;
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            List<String> li = ((ListSection) section).getItems();
+                            r.addSection(t,new ListSection(li));
+                            break;
+                        case EXPERIENCE:
+                            listNewOrgExp = ((OrganizationSection) section).getOrganizations();
+                            break;
+                        case EDUCATION:
+                            listNewOrgEdu = ((OrganizationSection) section).getOrganizations();
+                            break;
+                    }
+                }
+
+                for (SectionType type : SectionType.values()) {
+                    String value = request.getParameter(type.name());
+                    //String[] values = request.getParameterValues(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        switch (type) {
+                            case EXPERIENCE:
+                            case EDUCATION:
+                                String name=request.getParameter(type.name()+"_name");
+                                String url=request.getParameter(type.name() + "_urlNew");
+                                String title = request.getParameter(type.name() + "_titleNew");
+                                String startDate = request.getParameter(type.name() + "_startDateNew");
+                                String endDate = request.getParameter(type.name() + "_endDateNew");
+                                String description = request.getParameter(type.name() + "_descriptionNew");
+                                if (type.equals(SectionType.EXPERIENCE) && startDate!=null) {
+                                    listNewOrgExp.add(addNewSection(name, url, title, startDate, endDate, description));
+                                    r.addSection(type,new OrganizationSection(listNewOrgExp));
+                                }else
                                 if (type.equals(SectionType.EDUCATION) && startDate!=null) {
-                                listNewOrgEdu.add(addNewSection(name, url, title, startDate, endDate, description, type, request));
-                                r.addSection(type,new OrganizationSection(listNewOrgEdu));
-                            }
+                                    listNewOrgEdu.add(addNewSection(name, url, title, startDate, endDate, description));
+                                    r.addSection(type,new OrganizationSection(listNewOrgEdu));
+                                }
                         }
-            } else {
-                r.getSections().remove(type);
-            }
+                    } else {
+                        r.getSections().remove(type);
+                    }
+                }
+                break;
+
+            case "edit":
+                for (SectionType type : SectionType.values()) {
+                    String value = request.getParameter(type.name());
+                    String[] values = request.getParameterValues(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        switch (type)
+                        {
+                            case PERSONAL:
+                            case OBJECTIVE:
+                                r.addSection(type, new TextSection(value));
+                                break;
+                            case ACHIEVEMENT:
+                            case QUALIFICATIONS:
+                                r.addSection(type, new ListSection(value.split("\n")));
+                                break;
+                            case EXPERIENCE:
+                            case EDUCATION:
+                                int c=0;
+                                for (String org:values) {
+                                    List<Organization> listNewOrgExpEdit=new ArrayList<>();
+                                    List<Organization> listNewOrgEduEdit=new ArrayList<>();
+                                    c++;
+                                    String[] titlem = new String[10];
+                                    int count=100;
+
+
+                                    for (int i = 0; i <titlem.length ; i++) {
+                                        count++;
+                                    //    for (int j = 0; j <5 ; j++) {
+                                            String a = request.getParameter(type.name() + "_title_" + count);
+                                       //     if (titlem[i]==null)
+                                            titlem[i]=a;
+                                       // }
+                                    }
+
+
+                                    String[] title= request.getParameterValues(type.name()+"_title");
+                                    String url= request.getParameter(type.name()+"_url");
+                                    String[] urlm= request.getParameterValues(type.name()+"_url");
+                                    String[] startDatem= request.getParameterValues(type.name()+"_startDate");
+                                    String[] endDatem= request.getParameterValues(type.name()+"_endDate");
+                                    String[] descriptionm= request.getParameterValues(type.name()+"_description");
+
+                                   // for (int i = 0; i <titlem.length ; i++) {
+
+                                    if (type.equals(SectionType.EXPERIENCE)) {
+                                       // listNewOrgExpEdit.add(addNewSection(org, urlm[i], titlem[i], startDatem[i], endDatem[i], descriptionm[i]));
+                                        ArrayList<Organization.Position> list = addNewPosition(c, titlem, startDatem, endDatem, descriptionm);
+                                        listNewOrgExpEdit.add(new Organization(org,url,list.toArray(new Organization.Position[list.size()])));
+                                        r.addSection(type, new OrganizationSection(listNewOrgExpEdit));
+                                    }
+                                    else if (type.equals(SectionType.EDUCATION))
+                                    {
+                                       // listNewOrgEduEdit.add(addNewSection(org, urlm[i], titlem[i], startDatem[i], endDatem[i], descriptionm[i]));
+                                        ArrayList<Organization.Position> list = addNewPosition(c,titlem, startDatem, endDatem, descriptionm);
+                                        listNewOrgEduEdit.add(new Organization(org,url,list.toArray(new Organization.Position[list.size()])));
+                                        r.addSection(type, new OrganizationSection(listNewOrgEduEdit));
+                                    }
+                                    //}
+
+                                }
+                                /*
+                                if (type.equals(SectionType.EXPERIENCE)) {
+                                    r.addSection(type, new OrganizationSection(listNewOrgExpEdit));
+                                }else if (type.equals(SectionType.EDUCATION))
+                                {
+                                    r.addSection(type, new OrganizationSection(listNewOrgEduEdit));
+                                }
+                                */
+                                break;
+                        }
+                    } else {
+                        r.getSections().remove(type);
+                    }
+                }
+                break;
         }
 
         storage.update(r);
         response.sendRedirect("resume");
     }
 
-    private Organization addNewSection(String org , String url, String title, String startDate, String endDate, String description, SectionType type, HttpServletRequest request)
+    private ArrayList<Organization.Position> addNewPosition(int c, String[] titlem, String[] startDatem, String[] endDatem, String[] descriptionm) {
+        ArrayList<Organization.Position>positions=new ArrayList<>();
+        for (int i = 0; i <titlem.length ; i++) {
+            if (titlem[i]==null) break;
+            LocalDate startd = LocalDate.parse(startDatem[i]);
+            LocalDate endd= DateParseEnd(endDatem[i]);
+
+            positions.add(new Organization.Position(startd,endd,titlem[i],descriptionm[i]));
+        }
+        return positions;
+    }
+
+    private Organization addNewSection(String org , String url, String title, String startDate, String endDate, String description)
     {
         LocalDate startd = LocalDate.parse(startDate);
         LocalDate endd= DateParseEnd(endDate);
@@ -109,24 +208,6 @@ public class ResumeServlet extends HttpServlet {
             return endd = DateUtil.NOW;
         } else
             return endd = LocalDate.parse(endDate);
-    }
-
-    private List<Organization.Position> method2(List<Organization> listNewOrgEDUCATION)
-    {
-
-        List<Organization.Position> positions = new ArrayList<>();
-        for (Organization e:listNewOrgEDUCATION) {
-            positions = e.getPositions();
-        }
-        return positions;
-
-    }
-
-    private Organization.Position method(List<Organization.Position> positions) {
-        for (Organization.Position p : positions) {
-            return new Organization.Position(p.getStartDate(),p.getEndDate(),p.getTitle(),p.getDescription());
-        }
-        return null;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {

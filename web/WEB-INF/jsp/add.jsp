@@ -15,7 +15,7 @@
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
-    <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
+    <form method="post" action="resume?action=add" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <input type="hidden" name="fullName" value="${resume.fullName}">
         <c:set var="contacts" value="<%=resume.getContacts()%>"> </c:set>
