@@ -77,20 +77,6 @@
             </c:when>
         </c:choose>
         <b>Название:</b>
-        <%--
-        <dd><input name="${type}" type="text" size="50" value=""><br/></dd><br/>
-        <b>URL:</b>
-        <dd><input name="${type}_urlNew" type="text" size="50" value=""><br/></dd>
-        <br/><br/><b>Должность:</b>
-        <dd><input name="${type}_titleNew" type="text" size="50" value=""><br/></dd>
-        <br/><b>Дата начала:</b>
-        <dd><input name="${type}_startDateNew" type="date" size="50" value=""></dd><br/>
-        <b>Дата окончания:</b>
-        <dd><input name="${type}_endDateNew" type="date" size="50" value=""></dd>
-        <br/><b>Описание:</b><br/>
-        <textarea name="${type}_descriptionNew" cols="70"></textarea>
-        </dl>
-        --%>
         <dd><input name="${type}_name" type="text" size="50" value=""><br/></dd><br/>
         <b>URL:</b>
         <dd><input name="${type}_urlNew" type="text" size="50" value=""><br/></dd>

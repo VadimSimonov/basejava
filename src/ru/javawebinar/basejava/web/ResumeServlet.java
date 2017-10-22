@@ -48,7 +48,6 @@ public class ResumeServlet extends HttpServlet {
                 List<Organization> listNewOrgExp=new ArrayList<>();
                 List<Organization> listNewOrgEdu=new ArrayList<>();
 
-
                 for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                     SectionType t = e.getKey();
                     Section section = e.getValue();
@@ -75,7 +74,6 @@ public class ResumeServlet extends HttpServlet {
 
                 for (SectionType type : SectionType.values()) {
                     String value = request.getParameter(type.name());
-                    //String[] values = request.getParameterValues(type.name());
                     if (value != null && value.trim().length() != 0) {
                         switch (type) {
                             case EXPERIENCE:
@@ -102,6 +100,8 @@ public class ResumeServlet extends HttpServlet {
                 break;
 
             case "edit":
+                List<Organization> listNewOrgExpEdit=new ArrayList<>();
+                List<Organization> listNewOrgEduEdit=new ArrayList<>();
                 for (SectionType type : SectionType.values()) {
                     String value = request.getParameter(type.name());
                     String[] values = request.getParameterValues(type.name());
@@ -118,58 +118,29 @@ public class ResumeServlet extends HttpServlet {
                                 break;
                             case EXPERIENCE:
                             case EDUCATION:
-                                int c=0;
                                 for (String org:values) {
-                                    List<Organization> listNewOrgExpEdit=new ArrayList<>();
-                                    List<Organization> listNewOrgEduEdit=new ArrayList<>();
-                                    c++;
-                                    String[] titlem = new String[10];
-                                    int count=100;
+                                    int c=0;
 
-
-                                    for (int i = 0; i <titlem.length ; i++) {
-                                        count++;
-                                    //    for (int j = 0; j <5 ; j++) {
-                                            String a = request.getParameter(type.name() + "_title_" + count);
-                                       //     if (titlem[i]==null)
-                                            titlem[i]=a;
-                                       // }
-                                    }
-
-
-                                    String[] title= request.getParameterValues(type.name()+"_title");
-                                    String url= request.getParameter(type.name()+"_url");
-                                    String[] urlm= request.getParameterValues(type.name()+"_url");
-                                    String[] startDatem= request.getParameterValues(type.name()+"_startDate");
-                                    String[] endDatem= request.getParameterValues(type.name()+"_endDate");
-                                    String[] descriptionm= request.getParameterValues(type.name()+"_description");
-
-                                   // for (int i = 0; i <titlem.length ; i++) {
+                                    String[] titlem = request.getParameterValues(type.name() + "_title_"+org);
+                                    String[] url= request.getParameterValues(type.name()+"_url_"+org);
+                                    String[] startDatem= request.getParameterValues(type.name()+"_startDate_"+org);
+                                    String[] endDatem= request.getParameterValues(type.name()+"_endDate_"+org);
+                                    String[] descriptionm= request.getParameterValues(type.name()+"_description_"+org);
 
                                     if (type.equals(SectionType.EXPERIENCE)) {
-                                       // listNewOrgExpEdit.add(addNewSection(org, urlm[i], titlem[i], startDatem[i], endDatem[i], descriptionm[i]));
-                                        ArrayList<Organization.Position> list = addNewPosition(c, titlem, startDatem, endDatem, descriptionm);
-                                        listNewOrgExpEdit.add(new Organization(org,url,list.toArray(new Organization.Position[list.size()])));
+                                        ArrayList<Organization.Position> list = addNewPosition(titlem, startDatem, endDatem, descriptionm);
+                                        listNewOrgExpEdit.add(new Organization(org,url[c],list.toArray(new Organization.Position[list.size()])));
                                         r.addSection(type, new OrganizationSection(listNewOrgExpEdit));
+                                        c++;
                                     }
                                     else if (type.equals(SectionType.EDUCATION))
                                     {
-                                       // listNewOrgEduEdit.add(addNewSection(org, urlm[i], titlem[i], startDatem[i], endDatem[i], descriptionm[i]));
-                                        ArrayList<Organization.Position> list = addNewPosition(c,titlem, startDatem, endDatem, descriptionm);
-                                        listNewOrgEduEdit.add(new Organization(org,url,list.toArray(new Organization.Position[list.size()])));
+                                        ArrayList<Organization.Position> list = addNewPosition(titlem, startDatem, endDatem, descriptionm);
+                                        listNewOrgEduEdit.add(new Organization(org,url[c],list.toArray(new Organization.Position[list.size()])));
                                         r.addSection(type, new OrganizationSection(listNewOrgEduEdit));
+                                        c++;
                                     }
-                                    //}
-
                                 }
-                                /*
-                                if (type.equals(SectionType.EXPERIENCE)) {
-                                    r.addSection(type, new OrganizationSection(listNewOrgExpEdit));
-                                }else if (type.equals(SectionType.EDUCATION))
-                                {
-                                    r.addSection(type, new OrganizationSection(listNewOrgEduEdit));
-                                }
-                                */
                                 break;
                         }
                     } else {
@@ -178,18 +149,16 @@ public class ResumeServlet extends HttpServlet {
                 }
                 break;
         }
-
         storage.update(r);
         response.sendRedirect("resume");
     }
 
-    private ArrayList<Organization.Position> addNewPosition(int c, String[] titlem, String[] startDatem, String[] endDatem, String[] descriptionm) {
+    private ArrayList<Organization.Position> addNewPosition( String[] titlem, String[] startDatem, String[] endDatem, String[] descriptionm) {
         ArrayList<Organization.Position>positions=new ArrayList<>();
         for (int i = 0; i <titlem.length ; i++) {
             if (titlem[i]==null) break;
             LocalDate startd = LocalDate.parse(startDatem[i]);
             LocalDate endd= DateParseEnd(endDatem[i]);
-
             positions.add(new Organization.Position(startd,endd,titlem[i],descriptionm[i]));
         }
         return positions;
