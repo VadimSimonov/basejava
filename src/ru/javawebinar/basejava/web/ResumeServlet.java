@@ -99,6 +99,25 @@ public class ResumeServlet extends HttpServlet {
                 }
                 break;
 
+            case "addPosition":
+                List<Organization> listNewOrgExpP=new ArrayList<>();
+                List<Organization> listNewOrgEduP=new ArrayList<>();
+
+                for (SectionType type : SectionType.values()) {
+                    String value = request.getParameter(type.name());
+                    String[] values = request.getParameterValues(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        switch (type) {
+                            case EXPERIENCE:
+                            case EDUCATION:
+                               ExperEducationEditPosition(values,request,type,listNewOrgExpP,listNewOrgEduP,r);
+                    }
+                    } else {
+                        r.getSections().remove(type);
+                    }
+                }
+                break;
+
             case "edit":
                 List<Organization> listNewOrgExpEdit=new ArrayList<>();
                 List<Organization> listNewOrgEduEdit=new ArrayList<>();
@@ -118,29 +137,7 @@ public class ResumeServlet extends HttpServlet {
                                 break;
                             case EXPERIENCE:
                             case EDUCATION:
-                                for (String org:values) {
-                                    int c=0;
-
-                                    String[] titlem = request.getParameterValues(type.name() + "_title_"+org);
-                                    String[] url= request.getParameterValues(type.name()+"_url_"+org);
-                                    String[] startDatem= request.getParameterValues(type.name()+"_startDate_"+org);
-                                    String[] endDatem= request.getParameterValues(type.name()+"_endDate_"+org);
-                                    String[] descriptionm= request.getParameterValues(type.name()+"_description_"+org);
-
-                                    if (type.equals(SectionType.EXPERIENCE)) {
-                                        ArrayList<Organization.Position> list = addNewPosition(titlem, startDatem, endDatem, descriptionm);
-                                        listNewOrgExpEdit.add(new Organization(org,url[c],list.toArray(new Organization.Position[list.size()])));
-                                        r.addSection(type, new OrganizationSection(listNewOrgExpEdit));
-                                        c++;
-                                    }
-                                    else if (type.equals(SectionType.EDUCATION))
-                                    {
-                                        ArrayList<Organization.Position> list = addNewPosition(titlem, startDatem, endDatem, descriptionm);
-                                        listNewOrgEduEdit.add(new Organization(org,url[c],list.toArray(new Organization.Position[list.size()])));
-                                        r.addSection(type, new OrganizationSection(listNewOrgEduEdit));
-                                        c++;
-                                    }
-                                }
+                                ExperEducationEditPosition(values,request,type,listNewOrgExpEdit,listNewOrgEduEdit,r);
                                 break;
                         }
                     } else {
@@ -153,7 +150,32 @@ public class ResumeServlet extends HttpServlet {
         response.sendRedirect("resume");
     }
 
-    private ArrayList<Organization.Position> addNewPosition( String[] titlem, String[] startDatem, String[] endDatem, String[] descriptionm) {
+
+    private void ExperEducationEditPosition(String[] values, HttpServletRequest request, SectionType type, List<Organization> listNewOrgExpP, List<Organization> listNewOrgEduP, Resume r)
+    {
+        for (String org:values) {
+            int c = 0;
+            String[] title = request.getParameterValues(type.name() + "_title_"+org);
+            String[] url = request.getParameterValues(type.name() + "_url_"+org);
+            String[] startDate = request.getParameterValues(type.name() + "_startDate_"+org);
+            String[] endDate = request.getParameterValues(type.name() + "_endDate_"+org);
+            String[] description = request.getParameterValues(type.name() + "_description_"+org);
+            if (type.equals(SectionType.EXPERIENCE) && startDate != null) {
+                ArrayList<Organization.Position> list = addNewPositionm(title, startDate, endDate, description);
+                listNewOrgExpP.add(new Organization(org, url[c], list.toArray(new Organization.Position[list.size()])));
+                r.addSection(type, new OrganizationSection(listNewOrgExpP));
+                c++;
+            } else if (type.equals(SectionType.EDUCATION) && startDate != null) {
+                ArrayList<Organization.Position> list = addNewPositionm(title, startDate, endDate, description);
+                listNewOrgEduP.add(new Organization(org, url[c], list.toArray(new Organization.Position[list.size()])));
+                r.addSection(type, new OrganizationSection(listNewOrgEduP));
+                c++;
+            }
+        }
+    }
+
+
+    private ArrayList<Organization.Position> addNewPositionm(String[] titlem, String[] startDatem, String[] endDatem, String[] descriptionm) {
         ArrayList<Organization.Position>positions=new ArrayList<>();
         for (int i = 0; i <titlem.length ; i++) {
             if (titlem[i]==null) break;
@@ -196,6 +218,7 @@ public class ResumeServlet extends HttpServlet {
             case "view":
             case "edit":
             case "add":
+            case "addPosition":
                 r = storage.get(uuid);
                 break;
             default:
@@ -211,6 +234,9 @@ public class ResumeServlet extends HttpServlet {
                 break;
             case "add":
                 request.getRequestDispatcher("/WEB-INF/jsp/add.jsp").forward(request, response);
+                break;
+            case "addPosition":
+                request.getRequestDispatcher("/WEB-INF/jsp/addPosition.jsp").forward(request, response);
                 break;
         }
     /*

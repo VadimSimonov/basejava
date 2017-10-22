@@ -54,7 +54,7 @@
 
                     <c:forEach items="<%=((OrganizationSection) section).getOrganizations()%>" var="organizations" varStatus="loop">
                         <h4>Название:</h4>
-                        ${organizations.setId()}
+
                         <%--
                         <c:set var="index" value="${loop.index+100}" />
                         <c:set var="index" value="${index + 1}"/>
@@ -62,6 +62,7 @@
                         <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
                         <h4>URL:</h4>
                         <dd><input name="${type}_url_${organizations.homePage.name}" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
+                        <a href="resume?uuid=${resume.uuid}&action=addPosition&form=${type.name()}&org=${organizations.homePage.name}"><img src="img/add.png"></a>
                         <c:forEach items="${organizations.positions}" var="positions" varStatus="isindex">
 <%--
                             <c:set var="ind" value="${isindex.index+100}" />
