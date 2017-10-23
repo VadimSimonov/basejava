@@ -8,6 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
+    <c:set var="typeaction" value='<%=request.getParameter("action")%>'></c:set>
     <title>Резюме ${resume.fullName}</title>
 </head>
 <body>
@@ -44,10 +45,10 @@
                 </c:when>
                 <c:when test="${type.name()=='EXPERIENCE' || type.name()=='EDUCATION' }">
                     <c:choose>
-                        <c:when test="${type.name()=='EXPERIENCE' && !type.title==''}">
+                        <c:when test="${type.name()=='EXPERIENCE' && typeaction=='edit'}">
                             <a href="resume?uuid=${resume.uuid}&action=add&form=EXPERIENCE"><img src="img/add.png"></a>
                         </c:when>
-                        <c:when test="${type.name()=='EDUCATION' && !type.title==''}">
+                        <c:when test="${type.name()=='EDUCATION' && typeaction=='edit'}">
                             <a href="resume?uuid=${resume.uuid}&action=add&form=EDUCATION"><img src="img/add.png"></a>
                         </c:when>
                     </c:choose>
@@ -63,7 +64,7 @@
                         <h4>URL:</h4>
                         <dd><input name="${type}_url_${organizations.homePage.name}" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
                         <c:choose>
-                            <c:when test="${!type.title==''}">
+                            <c:when test="${typeaction=='edit'}">
                                 <a href="resume?uuid=${resume.uuid}&action=addPosition&form=${type.name()}&org=${organizations.homePage.name}"><img src="img/add.png"></a>
                             </c:when>
                         </c:choose>
