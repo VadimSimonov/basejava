@@ -44,10 +44,10 @@
                 </c:when>
                 <c:when test="${type.name()=='EXPERIENCE' || type.name()=='EDUCATION' }">
                     <c:choose>
-                        <c:when test="${type.name()=='EXPERIENCE'}">
+                        <c:when test="${type.name()=='EXPERIENCE' && !type.title==''}">
                             <a href="resume?uuid=${resume.uuid}&action=add&form=EXPERIENCE"><img src="img/add.png"></a>
                         </c:when>
-                        <c:when test="${type.name()=='EDUCATION'}">
+                        <c:when test="${type.name()=='EDUCATION' && !type.title==''}">
                             <a href="resume?uuid=${resume.uuid}&action=add&form=EDUCATION"><img src="img/add.png"></a>
                         </c:when>
                     </c:choose>
@@ -62,7 +62,11 @@
                         <dd><input name="${type}" type="text" size="70" value="${organizations.homePage.name}"><br/></dd>
                         <h4>URL:</h4>
                         <dd><input name="${type}_url_${organizations.homePage.name}" type="text" size="70" value="${organizations.homePage.url}"><br/></dd>
-                        <a href="resume?uuid=${resume.uuid}&action=addPosition&form=${type.name()}&org=${organizations.homePage.name}"><img src="img/add.png"></a>
+                        <c:choose>
+                            <c:when test="${!type.title==''}">
+                                <a href="resume?uuid=${resume.uuid}&action=addPosition&form=${type.name()}&org=${organizations.homePage.name}"><img src="img/add.png"></a>
+                            </c:when>
+                        </c:choose>
                         <c:forEach items="${organizations.positions}" var="positions" varStatus="isindex">
 <%--
                             <c:set var="ind" value="${isindex.index+100}" />

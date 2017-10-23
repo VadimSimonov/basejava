@@ -29,9 +29,19 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
         String action=request.getParameter("action");
-        System.out.println(action);
-        Resume r = storage.get(uuid);
-        r.setFullName(fullName);
+
+        final boolean isCreate = (uuid == null || uuid.length() == 0);
+        Resume r;
+        if (isCreate) {
+            r = new Resume(fullName);
+        } else {
+            r = storage.get(uuid);
+            r.setFullName(fullName);
+        }
+
+
+       // Resume r = storage.get(uuid);
+       // r.setFullName(fullName);
 
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
@@ -146,7 +156,11 @@ public class ResumeServlet extends HttpServlet {
                 }
                 break;
         }
-        storage.update(r);
+        if (isCreate) {
+            storage.save(r);
+        } else {
+            storage.update(r);
+        }
         response.sendRedirect("resume");
     }
 
@@ -160,6 +174,14 @@ public class ResumeServlet extends HttpServlet {
             String[] startDate = request.getParameterValues(type.name() + "_startDate_"+org);
             String[] endDate = request.getParameterValues(type.name() + "_endDate_"+org);
             String[] description = request.getParameterValues(type.name() + "_description_"+org);
+            if (startDate == null && title==null){
+                title = request.getParameterValues(type.name() + "_title_");
+                url = request.getParameterValues(type.name() + "_url_");
+                startDate = request.getParameterValues(type.name() + "_startDate_");
+                endDate = request.getParameterValues(type.name() + "_endDate_");
+                description = request.getParameterValues(type.name() + "_description_");
+            }
+
             if (type.equals(SectionType.EXPERIENCE) && startDate != null) {
                 ArrayList<Organization.Position> list = addNewPositionm(title, startDate, endDate, description);
                 listNewOrgExpP.add(new Organization(org, url[c], list.toArray(new Organization.Position[list.size()])));
@@ -215,8 +237,47 @@ public class ResumeServlet extends HttpServlet {
                 storage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
-            case "view":
+            case "insert":
+                r=Resume.EMPTY;
+                break;
+
             case "edit":
+                r = storage.get(uuid);
+                for (SectionType type : SectionType.values()) {
+                    Section section = r.getSection(type);
+                    switch (type) {
+                        case OBJECTIVE:
+                        case PERSONAL:
+                            if (section == null) {
+                                section = TextSection.EMPTY;
+                            }
+                            break;
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            if (section == null) {
+                                section = ListSection.EMPTY;
+                            }
+                            break;
+                        case EXPERIENCE:
+                        case EDUCATION:
+                            OrganizationSection orgSection = (OrganizationSection) section;
+                            List<Organization> emptyFirstOrganizations = new ArrayList<>();
+                            emptyFirstOrganizations.add(Organization.EMPTY);
+                            if (orgSection != null) {
+                                for (Organization org : orgSection.getOrganizations()) {
+                                    List<Organization.Position> emptyFirstPositions = new ArrayList<>();
+                                    emptyFirstPositions.add(Organization.Position.EMPTY);
+                                    emptyFirstPositions.addAll(org.getPositions());
+                                    emptyFirstOrganizations.add(new Organization(org.getHomePage(), emptyFirstPositions));
+                                }
+                            }
+                            section = new OrganizationSection(emptyFirstOrganizations);
+                            break;
+                    }
+                    r.addSection(type, section);
+                }
+
+            case "view":
             case "add":
             case "addPosition":
                 r = storage.get(uuid);
@@ -230,6 +291,7 @@ public class ResumeServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
                 break;
             case "edit":
+            case "insert":
                 request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
                 break;
             case "add":
